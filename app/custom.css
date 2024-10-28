@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap');
+
+/* :root {
+   --primary: #FF8F00;
+   --primaryhover: #894311;
+   --secondary: #dd9933;
+   --secondaryhover: #ddb97e;
+   --bannerbackground: #FF8F00;
+   --menuprimary: #894311;
+} */
+
+body {
+   font-family: "Roboto Slab", serif;
+   background-color: #000000;
+   color: #ffffff;
+   font-size: 15px;
+   line-height: 27px;
+}
+
+.logo {
+   background-image: url(https://crossmedia.fi/holvi/poistielta/img/Poistielta-Logo.svg);
+   background-repeat: no-repeat;
+   background-size: 206px;
+}
+
+.page-header-image-monkija {
+   background-color: #000000;
+   background-image: url(https://crossmedia.fi/holvi/poistielta/img/banner-monkija.jpg);
+   background-position: center center;
+   background-repeat: no-repeat;
+   background-size: cover;
+   width: 100%;
+   height: 298px;
+   padding: 0;
+}
+
+.page-header-image-enduro {
+   background-color: #000000;
+   background-image: url(https://crossmedia.fi/holvi/poistielta/img/banner-enduro.jpg);
+   background-position: center center;
+   background-repeat: no-repeat;
+   background-size: cover;
+   width: 100%;
+   height: 298px;
+   padding: 0;
+}
+
+.page-header-image-maastoauto {
+   background-color: #000000;
+   background-image: url(https://crossmedia.fi/holvi/poistielta/img/banner-maastoauto.jpg);
+   background-position: center center;
+   background-repeat: no-repeat;
+   background-size: cover;
+   width: 100%;
+   height: 298px;
+   padding: 0;
+}
+
+.page-header-image-fatbike {
+   background-color: #000000;
+   background-image: url(https://crossmedia.fi/holvi/poistielta/img/banner-fatbike.jpg);
+   background-position: center center;
+   background-repeat: no-repeat;
+   background-size: cover;
+   width: 100%;
+   height: 298px;
+   padding: 0;
+}
+
+a {
+   /* color: var(--secondary); */
+   color: #dd9933;
+}
+
+a:hover {
+   /* color: var(--secondaryhover); */
+   color: #ddb97e;
+}
+
+button {
+   color: #dd9933 !important;
+}
