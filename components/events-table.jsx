@@ -186,6 +186,7 @@ const ConfirmDialog = forwardRef(({ deleteEvent, eventId }, ref) => {
    )
 })
 
+ConfirmDialog.displayName = "ConfirmDialog";
 
 export default EventsTable;
 

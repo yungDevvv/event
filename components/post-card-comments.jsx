@@ -72,7 +72,7 @@ export default function PostCardComments({ event_post_id, user_id }) {
       return () => {
          supabase.removeChannel(subscription);
       };
-   }, [event_post_id, comments]);
+   }, [event_post_id, comments, supabase]);
 
    return (
       <div className='text-black!'>

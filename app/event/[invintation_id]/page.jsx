@@ -1,5 +1,6 @@
 "use client"
 
+import { useOrigin } from '@/hooks/use-origin';
 import '../../custom.css'
 
 import { Button } from "@/components/ui/button";
@@ -11,12 +12,13 @@ import { useRouter } from 'next/navigation';
 export default function Page({ params }) {
    const { invintation_id } = params;
    const router = useRouter();
-
+   const origin = useOrigin();
+   console.log(origin)
    const logOut = async () => {
       const supabase = createClient();
 
       const { error } = await supabase.auth.signOut()
-      router.push("https://app.crossmedia.fi/register-for-event/" + invintation_id + "/?login=true");
+      router.push(origin + "/" + invintation_id + "/?login=true");
    }
    return (
       <>

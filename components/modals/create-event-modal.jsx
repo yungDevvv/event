@@ -44,13 +44,14 @@ const formSchema = z.object({
    eventName: z.string().min(1, "Tapahtuman nimi vaaditaan."),
    eventTime: z.string().min(1, "Valitse tapahtuman aika."),
    eventDate: z
-      .string({ message: "Valitse tapahtuman päivämäärä." }) 
-      .refine((dateStr) => {
-         const date = new Date(dateStr);
-         return !isNaN(date.getTime()); 
-      }, {
-         message: "Valitse tapahtuman päivämäärä.", 
-      }),
+        .date({ message: "Valitse tapahtuman päivämäärä. 1" })
+        .refine((date) => {
+            // Проверяем, является ли дата в будущем
+            const now = new Date();
+            return date > now; // или измените условие в зависимости от ваших требований
+        }, {
+            message: "Valitse tapahtuman päivämäärä. 2",
+        }),
    instructionsFile: z.any().optional(),
    additionalServices: z.any().optional()
 });
@@ -86,7 +87,7 @@ const CreateEventModal = () => {
 
    const onSubmit = async (datar) => {
       const { data: { user } } = await supabase.auth.getUser();
-
+      console.log(data)
       if (data.edit) {
          if (user) {
             /* Update Event */
@@ -125,14 +126,14 @@ const CreateEventModal = () => {
             const { error } = await supabase
                .from('events')
                .insert({
-                  event_name: data.eventName,
-                  client_name: data.clientName,
-                  group_size: data.groupSize,
-                  event_type: data.eventType,
-                  event_date: data.eventDate,
-                  event_time: data.eventTime,
-                  additional_services: data.additionalServices,
-                  instructions_file: data.instructionsFile ? data.instructionsFile : null,
+                  event_name: datar.eventName,
+                  client_name: datar.clientName,
+                  group_size: datar.groupSize,
+                  event_type: datar.eventType,
+                  event_date: datar.eventDate,
+                  event_time: datar.eventTime,
+                  additional_services: datar.additionalServices,
+                  instructions_file: datar.instructionsFile ? datar.instructionsFile : null,
                   invintation_id: generateId(),
                   user_id: user.id
                });
@@ -164,17 +165,14 @@ const CreateEventModal = () => {
    };
 
    useEffect(() => {
-      console.log(eventData)
       const fetchEventData = async () => {
          const event = await supabase.from("events").select("*").eq("id", data.eventId);
-         console.log(event, "ASDASDASDASDASD EVENT")
          if (event && event.error) {
             console.error("error");
             toast({
                variant: "destructive",
                title: "Oops, Virhe ladattaessa tapahtumatietoja.",
                description: "500 Internal Server Error",
-               // action: <ToastAction altText="Try again">Try again</ToastAction>,
             })
             return;
          }
@@ -185,7 +183,7 @@ const CreateEventModal = () => {
          fetchEventData();
       }
 
-   }, [data])
+   }, [data, toast, supabase])
 
    useEffect(() => {
       if (eventData) {

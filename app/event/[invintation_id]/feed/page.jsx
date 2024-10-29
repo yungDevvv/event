@@ -18,7 +18,7 @@ export default function Page() {
    const { eventData, userData } = useEventContext();
    // console.log(process.env.SUPABASE_HOST,
    //    process.env.SUPABASE_ANON_KEY, "asdasdad")
-   if (!eventData) return "Event ID is missing!";
+   
 
    const router = useRouter();
    const { tab, setTab } = useTabs();
@@ -66,31 +66,8 @@ export default function Page() {
       return true; // all posts
    });
 
-   // useEffect(() => {
-   //    const supabase = createClient();
-
-   //    const subscription = supabase
-   //       .channel('event_posts')
-   //       .on('postgres_changes',
-   //          { event: 'INSERT', schema: 'public', table: 'event_posts' },
-   //          (payload) => {
-   //             console.log(payload)
-   //             const newPost = payload.new;
-
-   //             if (newPost.event_id === eventData.id) {
-   //                console.log("New post added for event:", eventId);
-   //                setHasNewPosts(true);
-
-   //             }
-   //          }
-   //       )
-   //       .subscribe();
-
-   //    return () => {
-   //       supabase.removeChannel(subscription);
-   //    };
-   // }, [posts, eventData.id]);
-
+   if (!eventData) return "Event ID is missing!";
+   
    return (
       <div className="bg-gray-100 min-h-screen">
          <div className="pb-[60px] px-4 max-xs:px-0">

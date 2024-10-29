@@ -120,9 +120,11 @@ function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite })
          setFileType('unknown');
       }
    };
+   
    useEffect(() => {
       getMimeTypeFromUrl("https://supa.crossmedia.fi/storage/v1/object/public/" + post.image_url)
-   }, [])
+   }, [post.image_url])
+
    return (
       <div className=" bg-white p-4 mb-4 flex flex-col items-center rounded-md" onClick={() => console.log(post)}>
          <div className="w-full flex items-center justify-between">

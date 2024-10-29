@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "start": "next start",
+    "start": "PORT=3030 next start",
     "lint": "next lint",
     "kill": "lsof -i :3000 -t >/dev/null && lsof -i :3000 -t | xargs kill",
-    "dev": "npm run kill; next dev"
+    "dev": "PORT=3030 next dev"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

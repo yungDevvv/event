@@ -1,6 +1,7 @@
 import {
    ChevronRight,
-   CalendarFold
+   CalendarFold,
+   Settings
 } from "lucide-react";
 
 import {
@@ -31,7 +32,7 @@ import { useModal } from "@/hooks/use-modal";
 
 const ClientSidebarContent = () => {
    const { onOpen } = useModal();
-  const { onOpenChange } = useSidebar(); 
+   const { onOpenChange } = useSidebar();
    return (
       <SidebarContent>
          <SidebarItem>
@@ -65,7 +66,7 @@ const ClientSidebarContent = () => {
                               <Button
                                  variant="ghost"
                                  onClick={() => {
-                                    onOpen("create-event", {edit: false})
+                                    onOpen("create-event", { edit: false })
                                     onOpenChange(false)
                                  }}
                                  className="min-w-8 w-full justify-start flex h-8 items-center gap-2 overflow-hidden rounded-md px-2 text-sm font-normal text-foreground ring-ring transition-all hover:bg-accent hover:text-accent-foreground focus-visible:ring-2"
@@ -87,6 +88,16 @@ const ClientSidebarContent = () => {
                </Collapsible>
 
             </ul>
+         </SidebarItem>
+         <SidebarItem>
+            <div className="relative flex items-center w-full cursor-pointer">
+               <Button variant="ghost" className="p-0 min-w-8 w-full justify-start flex h-8 items-center gap-2 overflow-hidden rounded-md px-2 text-sm font-normal text-foreground ring-ring transition-all hover:bg-accent hover:text-accent-foreground focus-visible:ring-2">
+                  <Settings className="h-4 w-4 shrink-0" />
+                  <div className="flex flex-1 overflow-hidden select-none">
+                     <div className="line-clamp-1 pr-6 font-semibold text-base">Asetukset</div>
+                  </div>
+               </Button>
+            </div>
          </SidebarItem>
       </SidebarContent>
    )

@@ -26,11 +26,22 @@ export default function UploadImage({ user_id, event_id, mutate }) {
 
    const handleImageChange = (e) => {
       const selectedFile = e.target.files[0];
+      
       if (selectedFile) {
-         setImage(selectedFile);
-         setPreviewUrl(URL.createObjectURL(selectedFile));
+         const maxSizeInBytes = 50 * 1024 * 1024; // 100 MB
+  
+          if (selectedFile.size > maxSizeInBytes) {
+              toast({
+                  variant: "destructive",
+                  title: "Virhe: Kuvan koko ei saa olla suurempi kuin 100 MB!",
+              });
+              return;
+          }
+  
+          setImage(selectedFile);
+          setPreviewUrl(URL.createObjectURL(selectedFile));
       }
-   };
+  };
 
    const uploadImage = async () => {
       const supabase = createClient();

@@ -87,7 +87,7 @@ export default function RegisterForEventForm({ title, event_id, isLogin }) {
 
    useEffect(() => {
       localStorage.setItem("event-app-respa", event_id);
-   }, [])
+   }, [event_id])
 
    return (
       <Card className="mx-auto w-full max-w-md">

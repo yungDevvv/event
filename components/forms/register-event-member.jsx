@@ -69,7 +69,7 @@ export const RegisterEventMember = ({ user }) => {
       if (!localStorage.getItem("event-app-respa")) {
          setEventExists(false);
       }
-   })
+   }, [])
 
    useEffect(() => {
       if (!hasEffectRun) {
