@@ -31,7 +31,7 @@ export function MainSidebar({ user, user1 }) {
         {user1.data[0].role === "member" && <p className="text-semibold text-lg py-3 text-center">You are member!</p>} 
         {/* <ClientSidebarContent /> */}
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser user={user1.data[0]} />
       </SidebarFooter>
     </Sidebar>
   );

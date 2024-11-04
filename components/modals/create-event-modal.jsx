@@ -23,7 +23,7 @@ import { useModal } from '@/hooks/use-modal';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { generateId } from '@/lib/utils';
+import { generateId, generateInviteId } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
 
@@ -43,15 +43,7 @@ const formSchema = z.object({
    groupSize: z.preprocess((val) => Number(val), z.number().positive("Ryhmän koon on oltava suurempi kuin 0.")),
    eventName: z.string().min(1, "Tapahtuman nimi vaaditaan."),
    eventTime: z.string().min(1, "Valitse tapahtuman aika."),
-   eventDate: z
-        .date({ message: "Valitse tapahtuman päivämäärä. 1" })
-        .refine((date) => {
-            // Проверяем, является ли дата в будущем
-            const now = new Date();
-            return date > now; // или измените условие в зависимости от ваших требований
-        }, {
-            message: "Valitse tapahtuman päivämäärä. 2",
-        }),
+   eventDate: z.date({ message: "Valitse tapahtuman päivämäärä." }),
    instructionsFile: z.any().optional(),
    additionalServices: z.any().optional()
 });
@@ -62,7 +54,7 @@ const CreateEventModal = () => {
    const router = useRouter();
    const { toast } = useToast();
    const { isOpen, onClose, type, data } = useModal();
-   console.log(data)
+
    const [eventData, setEventData] = useState({});
    const [selectedImage, setSelectedImage] = useState(null);
 
@@ -83,15 +75,30 @@ const CreateEventModal = () => {
 
    const isModalOpen = isOpen && type === "create-event";
    const isLoading = form.formState.isSubmitting;
+   console.log(form, "FOOORM")
    const { reset } = form;
 
    const onSubmit = async (datar) => {
       const { data: { user } } = await supabase.auth.getUser();
-      console.log(data)
       if (data.edit) {
          if (user) {
             /* Update Event */
-            const gg = await supabase
+            // const fileName = `${user.id}/instructions/${generateInviteId()}`; // eventID/userID.png
+
+            // const { data: uploadedFile, error: uploadedFileError } = await supabase.storage
+            //    .from('client_data')
+            //    .upload(fileName, datar.instructionsFile[0]);
+
+            // if(uploadedFileError) {
+            //    console.error(uploadedFileError);
+            //    toast({
+            //       variant: "supabaseError",
+            //       description: "Tuntematon virhe tiedoston latauksessa.",
+            //    });
+            //    return;
+            // }
+
+            const { error: updateError } = await supabase
                .from('events')
                .update({
                   event_name: datar.eventName,
@@ -101,29 +108,51 @@ const CreateEventModal = () => {
                   event_date: datar.eventDate,
                   event_time: datar.eventTime,
                   additional_services: datar.additionalServices,
-                  instructions_file: datar.instructionsFile ? datar.instructionsFile : null,
+                  // instructions_file: instructionsFile !== 0 ? uploadedFile.fullPath : null,
+                  instructions_file: null,
                })
                .eq("id", eventData.id);
-            
-            if (gg.error) {
-               console.error(gg.error);
-               toast({
-                  variant: "destructive",
-                  title: "Oops, Virhe päivitettyjen tapahtumatietojen lähettämisessä",
-                  description: "500 Internal Server Error",
+
+            if (updateError) {
+               console.error(updateError);
+               toast({ 
+                  variant: "supabaseError",
+                  description: "Tuntematon virhe päivittäessä tapahtumaa."
                });
                return;
-            } else {
-               router.push('/dashboard/events');
-               router.refresh();
-               onClose();
             }
+
+            toast({
+               variant: "success",
+               title: "Onnistui!",
+               description: "Tapahtuma on päivitetty onnistuneesti!"
+            });
+
+            router.refresh();
+            router.push('/dashboard/events');
+            onClose();
          }
          return;
       } else {
          /* Create Event */
          if (user) {
-            const { error } = await supabase
+            console.log(datar.instructionsFile, "ASDASDASDASD!!!!!!")
+            // const fileName = `${user.id}/instructions/${generateInviteId()}`; // eventID/userID.png
+
+            // const { data: uploadedFile, error: uploadedFileError } = await supabase.storage
+            //    .from('client_data')
+            //    .upload(fileName, datar.instructionsFile[0]);
+
+            // if(uploadedFileError) {
+            //    console.error(uploadedFileError);
+            //    toast({
+            //       variant: "supabaseError",
+            //       description: "Tuntematon virhe tiedoston latauksessa.",
+            //    });
+            //    return;
+            // }
+
+            const { data: createdEvent, error: createdEventError } = await supabase
                .from('events')
                .insert({
                   event_name: datar.eventName,
@@ -133,31 +162,52 @@ const CreateEventModal = () => {
                   event_date: datar.eventDate,
                   event_time: datar.eventTime,
                   additional_services: datar.additionalServices,
-                  instructions_file: datar.instructionsFile ? datar.instructionsFile : null,
+                  // instructions_file: instructionsFile !== 0 ? uploadedFile.fullPath : null,
+                  instructions_file: null,
                   invintation_id: generateId(),
                   user_id: user.id
+               }).select();
+            if (createdEventError) {
+               console.error(createdEventError);
+               toast({ 
+                  variant: "supabaseError",
+                  description: "Tuntematon virhe luotaessa tapahtumaa." 
                });
+               return;
+            }
+
+            /* ADD CREATOR AS MEMBER */
+            const { error } = await supabase
+               .from("event_member")
+               .insert({ event_id: createdEvent[0].id, user_id: user.id });
+
             if (error) {
                console.error(error);
-               toast({
-                  variant: "destructive",
-                  title: "Oops, Virhe lähetettäessä tapahtumatietoja.",
-                  description: "500 Internal Server Error",
-                  // action: <ToastAction altText="Try again">Try again</ToastAction>,
-               })
-            } else {
-               router.pathname === '/dashboard/events'
-                  ? (
-                     router.push('/dashboard/events'),
-                     router.refresh()
-                  )
-                  : (
-                     router.push('/dashboard/events'),
-                     router.refresh()
-                  )
-
-               onClose()
+               toast({ 
+                  variant: "supabaseError",
+                  description: "Tuntematon virhe lisäessä sinut osallistujaksi."
+               });
+               return;
             }
+
+            toast({
+               variant: "success",
+               title: "Onnistui!",
+               description: "Tapahtuma on luotu onnistuneesti."
+            });
+
+            router.pathname === '/dashboard/events'
+               ? (
+                  router.push('/dashboard/events'),
+                  router.refresh()
+               )
+               : (
+                  router.push('/dashboard/events'),
+                  router.refresh()
+               )
+
+            onClose()
+
          }
       }
 
@@ -166,14 +216,17 @@ const CreateEventModal = () => {
 
    useEffect(() => {
       const fetchEventData = async () => {
-         const event = await supabase.from("events").select("*").eq("id", data.eventId);
+         const event = await supabase
+            .from("events")
+            .select("*")
+            .eq("id", data.eventId);
+
          if (event && event.error) {
-            console.error("error");
+            console.error(event.error);
             toast({
-               variant: "destructive",
-               title: "Oops, Virhe ladattaessa tapahtumatietoja.",
-               description: "500 Internal Server Error",
-            })
+               variant: "supabaseError",
+               description: "Tuntematon virhe ladattaessa tapahtumatietoja.",
+            });
             return;
          }
 
@@ -187,10 +240,13 @@ const CreateEventModal = () => {
 
    useEffect(() => {
       if (eventData) {
+         const newEventDate = new Date(eventData.event_date)
+         console.log(eventData.event_date, "!111111111")
+         console.log(newEventDate)
          reset({
             eventName: eventData.event_name || '',
             clientName: eventData.client_name || '',
-            eventDate: eventData.event_date || null,
+            eventDate: newEventDate || null,
             eventType: eventData.event_type || '',
             groupSize: eventData.group_size || 1,
             eventTime: eventData.event_time || '',
@@ -360,7 +416,7 @@ const CreateEventModal = () => {
                         <FormItem>
                            <FormLabel className="block mb-1">Tapahtumaohjeistus</FormLabel>
                            <FormControl>
-                              <Input type="file" {...field} />
+                              <Input type="file" onChange={(e) => field.onChange(e.target.files)} />
                            </FormControl>
                            <FormMessage />
                         </FormItem>

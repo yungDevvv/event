@@ -15,6 +15,7 @@ import {
 
 import {
    Delete,
+   Download,
    EllipsisVertical,
    Heart,
    Loader2,
@@ -45,9 +46,8 @@ export const PostList = ({ posts, favoritesList, user, isValidating, addToFavori
       if (error) {
          console.error(error);
          toast({
-            variant: "destructive",
-            title: "ERROR",
-            description: "Kuvan poistaminen epäonnistui."
+            variant: "supabaseError",
+            description: "Tuntematon virhe poistettaessa kuvaa."
          });
          return;
       }
@@ -56,8 +56,8 @@ export const PostList = ({ posts, favoritesList, user, isValidating, addToFavori
 
       toast({
          variant: "success",
-         className: "border-green-500 font-medium",
-         description: "Kuvan poistaminen onnistui."
+         title: "Onnistui!",
+         description: "Kuva on poistettu onnistuneesti."
       });
    }
 
@@ -107,7 +107,6 @@ function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite })
          const response = await fetch(url, { method: 'HEAD' });
          const contentType = response.headers.get('Content-Type');
 
-         //   console.log(contentType)
          if (contentType.includes('image')) {
             setFileType('image');
          } else if (contentType.includes('video')) {
@@ -120,7 +119,7 @@ function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite })
          setFileType('unknown');
       }
    };
-   
+
    useEffect(() => {
       getMimeTypeFromUrl("https://supa.crossmedia.fi/storage/v1/object/public/" + post.image_url)
    }, [post.image_url])
@@ -150,6 +149,10 @@ function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite })
                         </DropdownMenuItem>
                      )
                   }
+                  <DropdownMenuItem className="flex items-center">
+                     <Download size={20} className="mr-2" />
+                     <span>Lataa</span>
+                  </DropdownMenuItem>
                </DropdownMenuContent>
             </DropdownMenu>
          </div>
@@ -170,9 +173,6 @@ function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite })
             </div>
             <Popover modal open={open} onOpenChange={setOpen}>
                <PopoverTrigger className="bg-zinc-100 rounded-full flex items-center px-4 py-2 cursor-pointer ml-3">
-                  {/* <Button className="bg-zinc-100 hover:bg-zinc-100 rounded-full flex items-center px-4 py-2 cursor-pointer ml-2" onClick={() => shareSome()}>
-                  <Share className='max-sm:w-[22px] text-black' />
-               </Button> */}
                   <Share className='max-sm:w-[22px] text-black' />
                </PopoverTrigger>
                <PopoverContent side="top" className="mb-3">
@@ -180,10 +180,6 @@ function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite })
                   <Button className="w-full mt-3" onClick={() => share()}>Jakaa</Button>
                </PopoverContent>
             </Popover>
-            {/* <Button asChild>
-               <Link href="https://api.whatsapp.com/send?text=esimerkki">Whatsapp</Link>
-            </Button> */}
-
          </div>
       </div>
    )

@@ -16,6 +16,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useState } from "react";
 import { useOrigin } from "@/hooks/use-origin";
 
+
 export default function Page({ searchParams }) {
    // const event_invite_id = searchParams.event_invite_id;
 

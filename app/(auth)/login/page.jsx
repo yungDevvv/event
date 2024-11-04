@@ -14,19 +14,24 @@ import {
 } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
-export default function Page() {
+export default function Page({ searchParams }) {
+  const { code } = searchParams;
+
+  const supabase = createClient();
+
   const router = useRouter();
+
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   const handleLogin = async (formData) => {
     setErrorMessage("");
     setIsLoading(true);
-    const supabase = createClient();
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email: formData.email,
@@ -47,6 +52,23 @@ export default function Page() {
     setIsLoading(false);
   };
 
+  useEffect(() => {
+    (async () => {
+      const { data: initUser, error: initUserError } = await supabase.auth.getUser();
+
+      if(initUserError) console.error(initUserError);
+      
+      if (initUser.user) {
+        const { data: user, error: userError } = await supabase.from("users").select("active_event").eq("id", initUser.user.id);
+
+        if(userError) console.error(userError);
+
+        if (user[0]) {
+          router.push("/");
+        }
+      }
+    })()
+  }, [code])
   return (
     <div className="flex h-screen w-full items-center justify-center px-4 bg-orange-100">
       <Card className="mx-auto w-full max-w-sm">

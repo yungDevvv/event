@@ -73,16 +73,16 @@ export default function UploadImage({ user_id, event_id, mutate }) {
 
          toast({
             variant: "success",
-            title: "Kuva on lähetetty!"
+            title: "Onnistui!",
+            description: "Kuva on lähetetty onnistuneesti!"
          });
       
       } catch (error) {
          console.error('Error uploading image:', error.message);
          toast({
-            variant: "destructive",
-            title: "ERROR: Kuva ei ole lähetetty!"
+            variant: "supabaseError",
+            description: "Tuntematon virhe kuvan latauksessa."
          });
-         
       } finally {
          router.refresh();
          setLoading(false);

@@ -27,7 +27,12 @@ const DatePicker = React.forwardRef(({ ...field }, ref) => {
                )}
             >
                <CalendarIcon className="mr-2 h-4 w-4" />
-               {field.value ? format(field.value, "PPP", { locale: fi }) : <span>Valitse päivämäärä</span>}
+               
+               {field.value instanceof Date && !isNaN(field.value.getTime())
+                  ? format(field.value, "PPP", { locale: fi })
+                  : <span>Valitse päivämäärä</span>
+               }
+               {/* {field.value ? format(new Date(Date.parse(field.value)), "PPP", { locale: fi }) : <span>Valitse päivämäärä</span>} */}
             </Button>
          </PopoverTrigger>
          <PopoverContent className="w-auto p-0" >
@@ -37,7 +42,7 @@ const DatePicker = React.forwardRef(({ ...field }, ref) => {
                onSelect={field.onChange}
                initialFocus
                locale={fi}
-               fromDate={new Date()}  
+               fromDate={new Date()}
             />
          </PopoverContent>
       </Popover>

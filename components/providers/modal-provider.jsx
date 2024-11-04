@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import CreateEventModal from "../modals/create-event-modal";
 import { useModal } from "@/hooks/use-modal";
+import MembersListModal from "../modals/members-list-modal";
 
 export const ModalProvider = () => {
     const [isMounted, setIsMounted] = useState(false);
@@ -18,6 +19,7 @@ export const ModalProvider = () => {
     return (
         <>
             {isOpen && type === "create-event" && <CreateEventModal />}
+            {isOpen && type === "event-members-list" && <MembersListModal />}
         </>
     )
 }

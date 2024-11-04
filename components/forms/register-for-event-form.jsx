@@ -13,28 +13,31 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/supabase/client";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useOrigin } from "@/hooks/use-origin";
 
 
-export default function RegisterForEventForm({ title, event_id, isLogin }) {
+export default function RegisterForEventForm({ title, event_id, isLogin, invintation_id }) {
    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
    const [message, setMessage] = useState("");
    const [errorMessage, setErrorMessage] = useState("");
    const [activeRegisterForm, setActiveRegisterForm] = useState(isLogin ? false : true);
    const router = useRouter();
+   const origin = useOrigin();
 
    const handleRegister = async (formData) => {
       setMessage("");
       setErrorMessage("");
-      
+
       const supabase = createClient();
 
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
          email: formData.email,
          password: formData.password,
          options: {
+            emailRedirectTo: "https://app.crossmedia.fi",
             data: {
                first_name: formData.first_name,
                last_name: formData.last_name,
@@ -56,44 +59,61 @@ export default function RegisterForEventForm({ title, event_id, isLogin }) {
          return;
       }
 
-      setMessage("Kutsulinkki lähetettiin sähköpostiisi.");
+      if (data && data.user) {
+         const { error } = await supabase.from("users").update({ active_event: invintation_id }).eq("id", data.user.id);
+
+         if (error) {
+            console.error('Error update user info:', error.message);
+            setErrorMessage(error.message);
+            return;
+         }
+
+         setMessage("Kutsulinkki lähetettiin sähköpostiisi.");
+      }
+
    }
 
    const handleLogin = async (formData) => {
       setMessage("");
       setErrorMessage("");
-      
+
       const supabase = createClient();
-  
-      const { error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: formData.password
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+         email: formData.email,
+         password: formData.password
       });
 
-      if(error && error.message === "Invalid login credentials") {
+      if (error && error.message === "Invalid login credentials") {
          setErrorMessage("Virheellinen käyttäjätunnus tai salasana");
          console.error('Error logging in:', error.message);
          return;
       }
 
-      if (error && error.message !== "Invalid login credentials" ) {
+      if (error && error.message !== "Invalid login credentials") {
          setErrorMessage(error.message);
          console.error('Error logging in:', error.message);
          return;
       }
 
-      router.push("/")
-    };
+      if (data && data.user) {
+         const { error } = await supabase.from("users").update({ active_event: invintation_id }).eq("id", data.user.id);
 
-   useEffect(() => {
-      localStorage.setItem("event-app-respa", event_id);
-   }, [event_id])
+         if (error) {
+            console.error('Error update user info:', error.message);
+            setErrorMessage(error.message);
+            return;
+         }
+
+         router.push("/")
+      }
+   };
 
    return (
       <Card className="mx-auto w-full max-w-md">
          <CardHeader>
             <CardTitle className="text-xl">
-              {activeRegisterForm ? "Rekiströidy tapahtumaan " : "Kirjaudu sisään tapahtumaan "} <br></br>- <span className="font-medium text-orange-400">{title}</span>
+               {activeRegisterForm ? "Rekiströidy tapahtumaan " : "Kirjaudu sisään tapahtumaan "} <br></br>- <span className="font-medium text-orange-400">{title}</span>
             </CardTitle>
             {message && <p className="text-green-500 text-sm">{message}</p>}
             {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
@@ -164,7 +184,7 @@ export default function RegisterForEventForm({ title, event_id, isLogin }) {
                      </Fragment>
                   ) : (
                      <Fragment>
-                         <div className="w-full text-right">
+                        <div className="w-full text-right">
                            <Link href="/reset-password" className="text-gray-700 hover:underline underline-offset-2">Unohditko salasana?</Link>
                         </div>
                         <Button
@@ -172,21 +192,21 @@ export default function RegisterForEventForm({ title, event_id, isLogin }) {
                            className="w-full text-md bg-orange-400 hover:bg-orange-500 cursor-pointer !text-white"
                            disabled={isSubmitting}
                         >
-                        {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Kirjaudu"}
+                           {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Kirjaudu"}
                         </Button>
                         <Separator />
-                  </Fragment>
+                     </Fragment>
                   )}
             </form>
             <div className="mt-4 text-center text-sm">
                {activeRegisterForm
                   ? (
-                     <Button variant={"link"} onClick={() => setActiveRegisterForm(false)} className="underline text-base">
+                     <Button variant={"link"} onClick={() => setActiveRegisterForm(false)} className="font-normal hover:underline text-base">
                         Kirjaudu sisään
                      </Button>
                   )
                   : (
-                     <Button variant={"link"} onClick={() => setActiveRegisterForm(true)} className="underline text-base">
+                     <Button variant={"link"} onClick={() => setActiveRegisterForm(true)} className="font-normal hover:underline text-base">
                         Rekiströidy
                      </Button>
                   )}

@@ -27,23 +27,17 @@ export function NavUser({
   user
 }) {
   const router = useRouter();
+
   const signOut = async () => {
     const supabase = createClient();
 
-    const eventInviteId = localStorage.getItem("event-app-respa-invite-id");
-
     const { error } = await supabase.auth.signOut()
-    
-    if(error) {
+
+    if (error) {
       alert("Oops, tapahtui virhe")
     }
-
-    if(eventInviteId) {
-      router.push(`/register-for-event/${eventInviteId}`)
-    } else {
-      router.push("/login")
-    }
-
+    
+    router.push("/login")
   }
 
   return (

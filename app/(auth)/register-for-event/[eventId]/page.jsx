@@ -1,7 +1,5 @@
 import RegisterForEventForm from "@/components/forms/register-for-event-form";
 import { createClient } from "@/lib/supabase/server";
-import { generateInviteId } from "@/lib/utils";
-
 
 export default async function Page({ params, searchParams }) {
    const { eventId } = params;
@@ -26,7 +24,7 @@ export default async function Page({ params, searchParams }) {
    if (data?.length !== 0) {
       return (
          <div className="flex h-screen w-full items-center justify-center px-4 bg-orange-100">
-            <RegisterForEventForm isLogin={isLogin ? isLogin : false} title={data[0].event_name} event_id={data[0].id} />
+            <RegisterForEventForm isLogin={isLogin ? isLogin : false} title={data[0].event_name} event_id={data[0].id} invintation_id={eventId} />
          </div>
       );
    }
