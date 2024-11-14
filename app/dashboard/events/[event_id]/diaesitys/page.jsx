@@ -4,6 +4,7 @@ import DiaImage from "@/components/diaesitys-image";
 import EventsTable from "@/components/page-components/events-table";
 import { Button } from "@/components/ui/button";
 import { Error } from "@/components/ui/error";
+import { useToast } from "@/hooks/use-toast";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, SquareX } from "lucide-react";
 import Image from "next/image";
@@ -12,22 +13,24 @@ import { Fragment, useEffect, useState } from "react";
 import useSWR from "swr";
 
 
-export default function Page({ params }) {
+export default function Page({ params, searchParams }) {
    const supabase = createClient();
    const { event_id } = params;
 
+   const { toast } = useToast();
    const router = useRouter()
 
    const { data: posts, mutate, isLoading } = useSWR(event_id, async () => {
       const { data, error } = await supabase
          .from("event_posts")
-         .select("*")
+         .select("*, events!event_id(event_name)")
          .eq("event_id", event_id);
 
       if (error) {
          console.error(error);
          return;
       }
+
       return data.length !== 0 ? data : null;
    });
 
@@ -82,8 +85,35 @@ export default function Page({ params }) {
       mutate();
    }, [posts])
 
+   useEffect(() => {
+      if (searchParams["offline"]) { //if redirected from /diaesitys/slider
+         (async () => { // turn off slide show
+            const { error } = await supabase
+               .from("events")
+               .update({ "diaesitys": false })
+               .eq("id", event_id)
+
+            if (error) {
+               console.error(error);
+               toast({
+                  variant: "supabaseError",
+                  description: "Tuntematon virhe sammutettaessa diaesitystä."
+               });
+               return;
+            }
+
+            toast({
+               variant: "success",
+               title: "Diaesitys",
+               description: "Diaesitys on nyt pysäytetty."
+            });
+         })()
+      }
+
+   }, [])
    return (
       <div className="w-full h-full min-h-screen">
+         <h1 className="font-semibold text-2xl mb-3">{posts && posts.length !== 0 && posts[0]?.events?.event_name}</h1>
          {isLoading ? (
             <div className="w-full h-full flex items-center justify-center">
                <Loader2 size={46} className="text-zinc-700 animate-spin" />

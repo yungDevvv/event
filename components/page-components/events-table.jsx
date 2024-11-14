@@ -131,6 +131,7 @@ const EventsTable = ({ data, user }) => {
                <TableHead>Tapahtuman päivämäärä</TableHead>
                <TableHead>Osallistujat</TableHead>
                <TableHead>Lisäpalvelut</TableHead>
+               <TableHead>Ryhmän koko</TableHead>
                <TableHead>Diaesitys</TableHead>
             </TableRow>
          </TableHeader>
@@ -140,7 +141,7 @@ const EventsTable = ({ data, user }) => {
                   <TableRow key={event.id}>
                      <TableCell className="font-medium">{event.event_name}</TableCell>
                      <TableCell className="capitalize">{event.event_type}</TableCell>
-                     <TableCell>{format(new Date(event.event_date), 'dd/MM/yyyy')}</TableCell>
+                     <TableCell>{format(new Date(event.event_date), 'dd.MM.yyyy')}</TableCell>
                      <TableCell>{event.memberCount}</TableCell>
                      <TableCell className="max-w-[100px] truncate">
                         {
@@ -149,6 +150,7 @@ const EventsTable = ({ data, user }) => {
                               : "Ei ole"
                         }
                      </TableCell>
+                     <TableCell>{event.group_size}</TableCell>
                      <TableCell>{event.diaesitys ? <div className="w-[7px] h-[7px] bg-green-500 rounded-full animate-glow ml-6"></div> : <div className="w-[7px] h-[7px] bg-red-500 rounded-full ml-6"></div>}</TableCell>
                      <TableCell className="text-right">
                         <DropdownMenu open={openDropdownId === event.id} onOpenChange={(isOpen) => setOpenDropdownId(isOpen ? event.id : null)}>
@@ -171,6 +173,13 @@ const EventsTable = ({ data, user }) => {
                                     <Eye size={18} className="mr-2" />
                                     <span>Näytä</span>
                                  </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem className="flex items-center" onClick={() => {
+                                 onOpen("create-event", { edit: false, duplicate: true, eventId: event.id })
+                                 setOpenDropdownId(null);
+                              }}>
+                                 <Pencil size={18} className="mr-2" />
+                                 <span>Duplicate</span>
                               </DropdownMenuItem>
                               <DropdownMenuItem className="text-sm" onClick={() => onCopy(event.invintation_id)}>
                                  {copied ? <Check size={18} className="mr-2" /> : <Copy size={18} className="mr-2" />}

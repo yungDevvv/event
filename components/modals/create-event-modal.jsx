@@ -25,6 +25,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { generateId, generateInviteId } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 
 const eventTypes = [
@@ -41,11 +42,14 @@ const formSchema = z.object({
    }),
    clientName: z.string().min(1, "Asiakkaan nimi vaaditaan."),
    groupSize: z.preprocess((val) => Number(val), z.number().positive("Ryhmän koon on oltava suurempi kuin 0.")),
+   eventAddress: z.string().min(1, "Tapahtuman osoite vaaditaan."),
+   eventPlace: z.string().min(1, "Tapahtuman paikka vaaditaan."),
    eventName: z.string().min(1, "Tapahtuman nimi vaaditaan."),
    eventTime: z.string().min(1, "Valitse tapahtuman aika."),
    eventDate: z.date({ message: "Valitse tapahtuman päivämäärä." }),
    instructionsFile: z.any().optional(),
-   additionalServices: z.any().optional()
+   additionalServices: z.any().optional(),
+   eventImage: z.any().optional()
 });
 
 const CreateEventModal = () => {
@@ -56,7 +60,7 @@ const CreateEventModal = () => {
    const { isOpen, onClose, type, data } = useModal();
 
    const [eventData, setEventData] = useState({});
-   const [selectedImage, setSelectedImage] = useState(null);
+   const [eventImage, setEventImage] = useState(null);
 
 
    const form = useForm({
@@ -66,92 +70,67 @@ const CreateEventModal = () => {
          clientName: '',
          eventDate: null,
          eventType: '',
+         eventAddress: '',
+         eventPlace: '',
          groupSize: 1,
          eventTime: '',
          additionalServices: [],
-         instructionsFile: null
+         instructionsFile: null,
+         eventImage: null
       }
    });
 
    const isModalOpen = isOpen && type === "create-event";
    const isLoading = form.formState.isSubmitting;
-   console.log(form, "FOOORM")
    const { reset } = form;
 
    const onSubmit = async (datar) => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (data.edit) {
-         if (user) {
-            /* Update Event */
-            // const fileName = `${user.id}/instructions/${generateInviteId()}`; // eventID/userID.png
 
-            // const { data: uploadedFile, error: uploadedFileError } = await supabase.storage
-            //    .from('client_data')
-            //    .upload(fileName, datar.instructionsFile[0]);
-
-            // if(uploadedFileError) {
-            //    console.error(uploadedFileError);
-            //    toast({
-            //       variant: "supabaseError",
-            //       description: "Tuntematon virhe tiedoston latauksessa.",
-            //    });
-            //    return;
-            // }
-
-            const { error: updateError } = await supabase
-               .from('events')
-               .update({
-                  event_name: datar.eventName,
-                  client_name: datar.clientName,
-                  group_size: datar.groupSize,
-                  event_type: datar.eventType,
-                  event_date: datar.eventDate,
-                  event_time: datar.eventTime,
-                  additional_services: datar.additionalServices,
-                  // instructions_file: instructionsFile !== 0 ? uploadedFile.fullPath : null,
-                  instructions_file: null,
-               })
-               .eq("id", eventData.id);
-
-            if (updateError) {
-               console.error(updateError);
-               toast({ 
-                  variant: "supabaseError",
-                  description: "Tuntematon virhe päivittäessä tapahtumaa."
-               });
-               return;
-            }
-
-            toast({
-               variant: "success",
-               title: "Onnistui!",
-               description: "Tapahtuma on päivitetty onnistuneesti!"
-            });
-
-            router.refresh();
-            router.push('/dashboard/events');
-            onClose();
-         }
-         return;
-      } else {
+      if (data?.duplicate) {
          /* Create Event */
          if (user) {
-            console.log(datar.instructionsFile, "ASDASDASDASD!!!!!!")
-            // const fileName = `${user.id}/instructions/${generateInviteId()}`; // eventID/userID.png
+            const instructionsFileName = `${user.id}/instructions/${generateInviteId()}`; // eventID/userID.png
+            const eventImageFileName = `${user.id}/event_image/${generateInviteId()}`;
 
-            // const { data: uploadedFile, error: uploadedFileError } = await supabase.storage
-            //    .from('client_data')
-            //    .upload(fileName, datar.instructionsFile[0]);
+            let instructionUploadedFile;
+            let eventImageUploadedFile;
 
-            // if(uploadedFileError) {
-            //    console.error(uploadedFileError);
-            //    toast({
-            //       variant: "supabaseError",
-            //       description: "Tuntematon virhe tiedoston latauksessa.",
-            //    });
-            //    return;
-            // }
+            if (datar?.instructionsFile) {
+               const { data: uploadedFilee, error: uploadedFileError } = await supabase.storage
+                  .from('client_data')
+                  .upload(instructionsFileName, datar.instructionsFile[0]);
 
+               if (uploadedFileError) {
+                  console.error(uploadedFileError);
+                  toast({
+                     variant: "supabaseError",
+                     description: "Tuntematon virhe tiedoston latauksessa varastoon.",
+                  });
+                  return;
+               }
+
+               instructionUploadedFile = uploadedFilee;
+            }
+
+            if (datar?.eventImage) {
+               const { data: uploadedFilee, error: uploadedFileError } = await supabase.storage
+                  .from('client_data')
+                  .upload(eventImageFileName ? eventImageFileName : `${user.id}/event_image/${generateInviteId()}`, datar.eventImage[0]);
+
+               if (uploadedFileError) {
+                  console.error(uploadedFileError);
+                  toast({
+                     variant: "supabaseError",
+                     description: "Tuntematon virhe kuvan latauksessa varastoon.",
+                  });
+                  return;
+               }
+
+               eventImageUploadedFile = uploadedFilee;
+            }
+
+            // console.log(uploadedFile, "uploadedFile !!!")
             const { data: createdEvent, error: createdEventError } = await supabase
                .from('events')
                .insert({
@@ -161,17 +140,19 @@ const CreateEventModal = () => {
                   event_type: datar.eventType,
                   event_date: datar.eventDate,
                   event_time: datar.eventTime,
+                  event_address: datar.eventAddress,
+                  event_place: datar.eventPlace,
                   additional_services: datar.additionalServices,
-                  // instructions_file: instructionsFile !== 0 ? uploadedFile.fullPath : null,
-                  instructions_file: null,
+                  instructions_file: datar?.instructionsFile ? instructionUploadedFile.fullPath : eventData.instructions_file,
+                  event_image: datar?.eventImage ? eventImageUploadedFile.fullPath : eventData.event_image,
                   invintation_id: generateId(),
                   user_id: user.id
                }).select();
             if (createdEventError) {
                console.error(createdEventError);
-               toast({ 
+               toast({
                   variant: "supabaseError",
-                  description: "Tuntematon virhe luotaessa tapahtumaa." 
+                  description: "Tuntematon virhe luotaessa tapahtumaa."
                });
                return;
             }
@@ -179,11 +160,11 @@ const CreateEventModal = () => {
             /* ADD CREATOR AS MEMBER */
             const { error } = await supabase
                .from("event_member")
-               .insert({ event_id: createdEvent[0].id, user_id: user.id });
+               .insert({ event_id: createdEvent[0].id, user_id: user.id, active_event: createdEvent[0].invintation_id});
 
             if (error) {
                console.error(error);
-               toast({ 
+               toast({
                   variant: "supabaseError",
                   description: "Tuntematon virhe lisäessä sinut osallistujaksi."
                });
@@ -209,9 +190,194 @@ const CreateEventModal = () => {
             onClose()
 
          }
+
+         return;
       }
+      if (data.edit) {
+         if (user) {
+            /* Update Event */
+            const instructionsFileName = `${user.id}/instructions/${generateInviteId()}`; // eventID/userID.png
+            const eventImageFileName = `${user.id}/event_image/${generateInviteId()}`;
 
+            let instructionUploadedFile;
+            let eventImageUploadedFile;
 
+            if (datar?.instructionsFile) {
+               const { data: uploadedFilee, error: uploadedFileError } = await supabase.storage
+                  .from('client_data')
+                  .upload(instructionsFileName, datar.instructionsFile[0]);
+
+               if (uploadedFileError) {
+                  console.error(uploadedFileError);
+                  toast({
+                     variant: "supabaseError",
+                     description: "Tuntematon virhe tiedoston latauksessa varastoon.",
+                  });
+                  return;
+               }
+
+               instructionUploadedFile = uploadedFilee;
+            }
+
+            if (datar?.eventImage) {
+               const { data: uploadedFilees, error: uploadedFileError } = await supabase.storage
+                  .from('client_data')
+                  .upload(eventImageFileName ? eventImageFileName : `${user.id}/event_image/${generateInviteId()}`, datar.eventImage[0]);
+
+               if (uploadedFileError) {
+                  console.error(uploadedFileError);
+                  toast({
+                     variant: "supabaseError",
+                     description: "Tuntematon virhe kuvan latauksessa varastoon.",
+                  });
+                  return;
+               }
+
+               eventImageUploadedFile = uploadedFilees;
+            }
+            console.log(eventImageUploadedFile, "EVENT IMAGE");
+            console.log(instructionUploadedFile, "INSTURCTIONS");
+            const { error: updateError } = await supabase
+               .from('events')
+               .update({
+                  event_name: datar.eventName,
+                  client_name: datar.clientName,
+                  group_size: datar.groupSize,
+                  event_type: datar.eventType,
+                  event_date: datar.eventDate,
+                  event_time: datar.eventTime,
+                  event_address: datar.eventAddress,
+                  event_place: datar.eventPlace,
+                  additional_services: datar.additionalServices,
+                  instructions_file: datar?.instructionsFile ? instructionUploadedFile.fullPath : eventData.instructions_file,
+                  event_image: datar?.eventImage ? eventImageUploadedFile.fullPath : eventData.event_image
+                  
+               })
+               .eq("id", eventData.id);
+
+            if (updateError) {
+               console.error(updateError);
+               toast({
+                  variant: "supabaseError",
+                  description: "Tuntematon virhe päivittäessä tapahtumaa."
+               });
+               return;
+            }
+
+            toast({
+               variant: "success",
+               title: "Onnistui!",
+               description: "Tapahtuma on päivitetty onnistuneesti!"
+            });
+
+            router.push('/dashboard/events');
+            router.refresh();
+            onClose();
+         }
+
+         return;
+      } else {
+         /* Create Event */
+         if (user) {
+            const instructionsFileName = `${user.id}/instructions/${generateInviteId()}`; // eventID/userID.png
+
+            let instructionUploadedFile;
+            let eventImageUploadedFile;
+
+            if (datar?.eventImage) {
+               const { data: uploadedFilee, error: uploadedFileError } = await supabase.storage
+                  .from('client_data')
+                  .upload(eventImageFileName ? eventImageFileName : `${user.id}/event_image/${generateInviteId()}`, datar.eventImage[0]);
+
+               if (uploadedFileError) {
+                  console.error(uploadedFileError);
+                  toast({
+                     variant: "supabaseError",
+                     description: "Tuntematon virhe kuvan latauksessa varastoon.",
+                  });
+                  return;
+               }
+
+               eventImageUploadedFile = uploadedFilee;
+            }
+
+            if (datar?.instructionsFile) {
+               const { data: uploadedFilee, error: uploadedFileError } = await supabase.storage
+                  .from('client_data')
+                  .upload(instructionsFileName, datar.instructionsFile[0]);
+
+               if (uploadedFileError) {
+                  console.error(uploadedFileError);
+                  toast({
+                     variant: "supabaseError",
+                     description: "Tuntematon virhe tiedoston latauksessa varastoon.",
+                  });
+                  return;
+               }
+
+               instructionUploadedFile = uploadedFilee;
+            }
+            
+            const { data: createdEvent, error: createdEventError } = await supabase
+               .from('events')
+               .insert({
+                  event_name: datar.eventName,
+                  client_name: datar.clientName,
+                  group_size: datar.groupSize,
+                  event_type: datar.eventType,
+                  event_date: datar.eventDate,
+                  event_time: datar.eventTime,
+                  event_address: datar.eventAddress,
+                  event_place: datar.eventPlace,
+                  additional_services: datar.additionalServices,
+                  instructions_file: datar?.instructionsFile ? instructionUploadedFile.fullPath : eventData.instructions_file,
+                  event_image: datar?.eventImage ? eventImageUploadedFile.fullPath : eventData.event_image,
+                  invintation_id: generateId(),
+                  user_id: user.id
+               }).select();
+
+            if (createdEventError) {
+               console.error(createdEventError);
+               toast({
+                  variant: "supabaseError",
+                  description: "Tuntematon virhe luotaessa tapahtumaa."
+               });
+               return;
+            }
+
+            /* ADD CREATOR AS MEMBER */
+            const { error } = await supabase
+               .from("event_member")
+               .insert({ event_id: createdEvent[0].id, user_id: user.id });
+
+            if (error) {
+               console.error(error);
+               toast({
+                  variant: "supabaseError",
+                  description: "Tuntematon virhe lisäessä sinut osallistujaksi."
+               });
+               return;
+            }
+
+            toast({
+               variant: "success",
+               title: "Onnistui!",
+               description: "Tapahtuma on luotu onnistuneesti."
+            });
+
+            router.pathname === '/dashboard/events'
+               ? (
+                  router.push('/dashboard/events'),
+                  router.refresh()
+               )
+               : (
+                  router.push('/dashboard/events'),
+                  router.refresh()
+               )
+
+            onClose()
+         }
+      }
    };
 
    useEffect(() => {
@@ -232,7 +398,7 @@ const CreateEventModal = () => {
 
          setEventData(...event.data)
       }
-      if (data.edit) {
+      if (data?.edit || data?.duplicate) {
          fetchEventData();
       }
 
@@ -241,8 +407,6 @@ const CreateEventModal = () => {
    useEffect(() => {
       if (eventData) {
          const newEventDate = new Date(eventData.event_date)
-         console.log(eventData.event_date, "!111111111")
-         console.log(newEventDate)
          reset({
             eventName: eventData.event_name || '',
             clientName: eventData.client_name || '',
@@ -251,7 +415,10 @@ const CreateEventModal = () => {
             groupSize: eventData.group_size || 1,
             eventTime: eventData.event_time || '',
             additionalServices: eventData.additional_services || [],
-            instructionsFile: null
+            eventAddress: eventData.event_address || '',
+            eventPlace: eventData.event_place || '',
+            instructionsFile: null,
+            eventImage: null
          });
       }
    }, [eventData, reset]);
@@ -268,7 +435,7 @@ const CreateEventModal = () => {
                </DialogTitle>
             </DialogHeader>
             <Form {...form}>
-               <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-[600px] mx-auto space-y-3 max-sm:mx-0 max-sm:px-5">
+               <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-[600px] mx-auto space-y-3 max-sm:mx-0 max-sm:px-5 px-10">
                   {/* Event Name */}
                   <FormField
                      control={form.control}
@@ -298,59 +465,86 @@ const CreateEventModal = () => {
                         </FormItem>
                      )}
                   />
+                  <div className="flex max-sm:block max-sm:space-y-3">
 
-                  {/* Group size */}
-                  <FormField
-                     control={form.control}
-                     name="groupSize"
-                     render={({ field }) => (
-                        <FormItem>
-                           <FormLabel className="block mb-1">Ryhmän koko</FormLabel>
-                           <FormControl>
-                              <Input type="number" {...field} />
-                           </FormControl>
-                           <FormMessage />
-                        </FormItem>
-                     )}
-                  />
+                     {/* Event Address */}
+                     <FormField
+                        control={form.control}
+                        name="eventAddress"
+                        render={({ field }) => (
+                           <FormItem className="mr-1 max-sm:mr-0 w-full">
+                              <FormLabel className="block mb-1">Tapahtuman osoite</FormLabel>
+                              <FormControl>
+                                 <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                           </FormItem>
+                        )}
+                     />
 
-                  {/* Event Type */}
-                  <FormField
-                     control={form.control}
-                     name="eventType"
-                     render={({ field }) => (
-                        <FormItem>
-                           <FormLabel className="block mb-1">Tapahtuman tyyppi</FormLabel>
-                           <FormControl>
-                              <Select
-                                 onValueChange={field.onChange}
-                              >
-                                 <SelectTrigger className="w-full capitalize">
-                                    <SelectValue placeholder={eventData && eventData.event_type ? eventData.event_type : "Valitse tapahtuman tyyppi"} />
-                                 </SelectTrigger>
-                                 <SelectContent>
-                                    <SelectGroup>
-                                       {eventTypes.map((type) => (
-                                          <SelectItem key={type.value} value={type.value}>
-                                             {type.label}
-                                          </SelectItem>
-                                       ))}
-                                    </SelectGroup>
-                                 </SelectContent>
-                              </Select>
-                           </FormControl>
-                           <FormMessage />
-                        </FormItem>
-                     )}
-                  />
+                     {/* Event Place */}
+                     <FormField
+                        control={form.control}
+                        name="eventPlace"
+                        render={({ field }) => (
+                           <FormItem className="ml-1 max-sm:ml-0 w-full">
+                              <FormLabel className="block mb-1">Tapahtuman paikka</FormLabel>
+                              <FormControl>
+                                 <Input placeholder="Helsinki" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                           </FormItem>
+                        )}
+                     />
 
-                  {/* */}
-                  {selectedImage && (
-                     <div className="my-4">
-                        <label className="font-medium">Tapahtuman taustakuva</label>
-                        <img src={selectedImage} alt="Event background" className="w-full h-40 object-cover rounded-md" />
-                     </div>
-                  )}
+                  </div>
+
+                  <div className="flex max-sm:block max-sm:space-y-3">
+                     {/* Group size */}
+                     <FormField
+                        control={form.control}
+                        name="groupSize"
+                        render={({ field }) => (
+                           <FormItem className="mr-1 max-sm:mr-0 w-full">
+                              <FormLabel className="block mb-1">Ryhmän koko</FormLabel>
+                              <FormControl>
+                                 <Input type="number" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                           </FormItem>
+                        )}
+                     />
+
+                     {/* Event Type */}
+                     <FormField
+                        control={form.control}
+                        name="eventType"
+                        render={({ field }) => (
+                           <FormItem className="ml-1 max-sm:ml-0 w-full">
+                              <FormLabel className="block mb-1">Tapahtuman tyyppi</FormLabel>
+                              <FormControl>
+                                 <Select
+                                    onValueChange={field.onChange}
+                                 >
+                                    <SelectTrigger className="w-full capitalize">
+                                       <SelectValue placeholder={eventData && eventData.event_type ? eventData.event_type : "Valitse tapahtuman tyyppi"} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                       <SelectGroup>
+                                          {eventTypes.map((type) => (
+                                             <SelectItem key={type.value} value={type.value}>
+                                                {type.label}
+                                             </SelectItem>
+                                          ))}
+                                       </SelectGroup>
+                                    </SelectContent>
+                                 </Select>
+                              </FormControl>
+                              <FormMessage />
+                           </FormItem>
+                        )}
+                     />
+                  </div>
 
                   {/* Additional Services */}
                   <FormField
@@ -377,7 +571,7 @@ const CreateEventModal = () => {
                         control={form.control}
                         name="eventDate"
                         render={({ field }) => (
-                           <FormItem className="mr-1 max-sm:mr-0">
+                           <FormItem className="mr-1 max-sm:mr-0 w-full">
                               <FormLabel className="block mb-1">Tapahtuman päivämäärä</FormLabel>
                               <FormControl>
                                  <DatePicker {...field} />
@@ -393,7 +587,7 @@ const CreateEventModal = () => {
                         control={form.control}
                         name="eventTime"
                         render={({ field }) => (
-                           <FormItem className="ml-1 max-sm:ml-0">
+                           <FormItem className="ml-1 max-sm:ml-0 w-full">
                               <FormLabel className="block mb-1">Tapahtuman kellonaika</FormLabel>
                               <FormControl>
                                  <Input
@@ -408,23 +602,73 @@ const CreateEventModal = () => {
                      >
                      </FormField>
                   </div>
+                  <div className="flex max-sm:block max-sm:space-y-3">
+                     <FormField
+                        control={form.control}
+                        name="instructionsFile"
+                        render={({ field }) => (
+                           <FormItem className="mr-1">
+                              <FormLabel className="block mb-1">Tapahtumaohjeistus</FormLabel>
+                              <FormControl className="cursor-pointer">
+                                 <Input type="file" onChange={(e) => field.onChange(e.target.files)} />
+                              </FormControl>
+                              <FormMessage />
+                              {console.log(eventData)}
+                              {eventData && eventData?.instructions_file && <Link className='block mt-1 underline text-center' target="_blank" rel="noopener noreferrer" href={"https://supa.crossmedia.fi/storage/v1/object/public/" + eventData?.instructions_file}>Aktiivinen ohjeistus</Link>}
+                           </FormItem>
+                        )}
+                     />
 
-                  <FormField
+                     <FormField
+                        control={form.control}
+                        name="eventImage"
+                        render={({ field }) => (
+                           <FormItem className="ml-1">
+                              <FormLabel className="block mb-1">Tapahtuman kuva</FormLabel>
+                              <FormControl className="cursor-pointer">
+                                 <Input type="file" onChange={(e) => {
+                                    field.onChange(e.target.files)
+                                    setEventImage(e.target?.files[0] ? e.target.files[0] : null)
+                                    }} />
+                              </FormControl>
+                              <FormMessage />
+                              {eventData && eventData?.event_image && <img className='mt-2 h-[80px] rounded-md w-full object-cover' src={"https://supa.crossmedia.fi/storage/v1/object/public/" + eventData?.event_image} />}
+                              {eventImage && <img className='mt-2 h-[80px] rounded-md w-full object-cover' src={URL.createObjectURL(eventImage)} />} {console.log(eventImage)}
+                           </FormItem>
+                        )}
+                     />
+                  </div>
+                  {/* <FormField
                      control={form.control}
                      name="instructionsFile"
                      render={({ field }) => (
                         <FormItem>
                            <FormLabel className="block mb-1">Tapahtumaohjeistus</FormLabel>
-                           <FormControl>
+                           <FormControl className="cursor-pointer">
                               <Input type="file" onChange={(e) => field.onChange(e.target.files)} />
                            </FormControl>
                            <FormMessage />
                         </FormItem>
                      )}
                   />
-
+                  {eventData && eventData?.instructions_file && <Link className='block mt-1 underline' target="_blank" rel="noopener noreferrer" href={"https://supa.crossmedia.fi/storage/v1/object/public/" + eventData?.instructions_file}>Aktiivinen ohjeistus</Link>}
+                  
+                  <FormField
+                     control={form.control}
+                     name="eventImage"
+                     render={({ field }) => (
+                        <FormItem>
+                           <FormLabel className="block mb-1">Tapahtuman kuva</FormLabel>
+                           <FormControl className="cursor-pointer">
+                              <Input type="file" onChange={(e) => field.onChange(e.target.files)} />
+                           </FormControl>
+                           <FormMessage />
+                        </FormItem>
+                     )}
+                  /> */}
                   <DialogFooter className="pb-8">
-                     <Button type="submit" disabled={isLoading}>{isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : data.edit ? "Muokkaa tapahtuma" : "Luo tapahtuma"}</Button>
+                     {data?.duplicate && <Button type="submit" disabled={isLoading}>{isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Luo tapahtuma"}</Button>}
+                     {!data?.duplicate && <Button type="submit" disabled={isLoading}>{isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : data.edit ? "Muokkaa tapahtuma" : "Luo tapahtuma"}</Button>}
                   </DialogFooter>
                </form>
             </Form>

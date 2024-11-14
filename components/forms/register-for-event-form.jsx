@@ -13,19 +13,22 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/supabase/client";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useOrigin } from "@/hooks/use-origin";
 
+export default function RegisterForEventForm({ logo, title, event_id, isLogin, invintation_id }) {
 
-export default function RegisterForEventForm({ title, event_id, isLogin, invintation_id }) {
    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
    const [message, setMessage] = useState("");
    const [errorMessage, setErrorMessage] = useState("");
    const [activeRegisterForm, setActiveRegisterForm] = useState(isLogin ? false : true);
-   const router = useRouter();
+
    const origin = useOrigin();
+   const router = useRouter();
+
+   const supabase = createClient();
 
    const handleRegister = async (formData) => {
       setMessage("");
@@ -37,7 +40,7 @@ export default function RegisterForEventForm({ title, event_id, isLogin, invinta
          email: formData.email,
          password: formData.password,
          options: {
-            emailRedirectTo: "https://app.crossmedia.fi",
+            emailRedirectTo: origin,
             data: {
                first_name: formData.first_name,
                last_name: formData.last_name,
@@ -77,8 +80,6 @@ export default function RegisterForEventForm({ title, event_id, isLogin, invinta
       setMessage("");
       setErrorMessage("");
 
-      const supabase = createClient();
-
       const { data, error } = await supabase.auth.signInWithPassword({
          email: formData.email,
          password: formData.password
@@ -104,16 +105,41 @@ export default function RegisterForEventForm({ title, event_id, isLogin, invinta
             setErrorMessage(error.message);
             return;
          }
-
-         router.push("/")
       }
+      router.push("/")
    };
 
+   useEffect(() => {
+      (async () => {
+         const { data: initUser, error: initUserError } = await supabase.auth.getUser();
+
+         // if (initUserError) console.error(initUserError);
+
+         if (initUser.user) {
+            const { data: user, error: userError } = await supabase
+               .from("users")
+               .select("active_event")
+               .eq("id", initUser.user.id);
+
+            if (userError) console.error(userError);
+
+            if (user[0]) {
+               router.push("/");
+            }
+         }
+      })()
+   }, [])
+
    return (
-      <Card className="mx-auto w-full max-w-md">
+      <Card className="mx-auto w-full max-w-md relative">
+         {logo && (
+            <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+               <img className='w-40 text-center' src={"https://supa.crossmedia.fi/storage/v1/object/public/" + logo} />
+            </div>
+         )}
          <CardHeader>
-            <CardTitle className="text-xl">
-               {activeRegisterForm ? "Rekiströidy tapahtumaan " : "Kirjaudu sisään tapahtumaan "} <br></br>- <span className="font-medium text-orange-400">{title}</span>
+            <CardTitle className="text-xl text-center">
+               {activeRegisterForm ? "Rekiströidy tapahtumaan " : "Kirjaudu sisään tapahtumaan "} <br></br> <span className="font-medium text-orange-400">{title}</span>
             </CardTitle>
             {message && <p className="text-green-500 text-sm">{message}</p>}
             {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}

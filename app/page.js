@@ -3,13 +3,13 @@ import getAuthUser from "@/lib/supabase/user";
 import { createClient } from '@/lib/supabase/server';
 import { Error } from '@/components/ui/error';
 
+
 export default async function Home() {
-  debugger
   const user = await getAuthUser();
   const supabase = createClient();
-
+  console.log(user)
   if (user.role === "client") {
-    return redirect("/dashboard");
+    return redirect("/dashboard/events");
   }
 
   if (user.active_event) {

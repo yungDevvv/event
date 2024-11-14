@@ -19,19 +19,21 @@ const data = {
   },
 }
 
-export function MainSidebar({ user, user1 }) {
-  // console.log(user)
+export function MainSidebar({ user, clientData }) {
   return (
     <Sidebar>
-      <SidebarHeader>
-        <span className="text-lg text-orange-500 font-bold">Company Logo</span>
+      <SidebarHeader className="justify-center">
+        {clientData !== null
+          ? <img className="max-h-[100px] h-full" src={"https://supa.crossmedia.fi/storage/v1/object/public/" + clientData.logo} />
+          : <span className="text-lg text-orange-500 font-bold">Company Logo</span>
+        }
       </SidebarHeader>
-        {user1.data[0].role === "client" && <ClientSidebarContent />} 
-        {user1.data[0].role === "superadmin" && <AdminSidebarContent />}
-        {user1.data[0].role === "member" && <p className="text-semibold text-lg py-3 text-center">You are member!</p>} 
-        {/* <ClientSidebarContent /> */}
+      {user.role === "client" && <ClientSidebarContent />}
+      {user.role === "superadmin" && <AdminSidebarContent />}
+      {user.role === "member" && <p className="text-semibold text-lg py-3 text-center">You are member!</p>}
+      {/* <ClientSidebarContent /> */}
       <SidebarFooter>
-        <NavUser user={user1.data[0]} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );

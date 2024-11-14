@@ -1,38 +1,191 @@
+// "use client"
+// import '../../custom.css'
+// import { useTranslation } from "react-i18next";
+// import { useOrigin } from '@/hooks/use-origin';
+// import { Button } from "@/components/ui/button";
+// import { createClient } from "@/lib/supabase/client";
+// import Link from "next/link";
+// import { useRouter } from 'next/navigation';
+// import useSWR from "swr";
+// import { useEffect, useState } from 'react';
+// import { format } from 'date-fns';
+// // import { useTranslation } from 'next-i18next';
+// // import { useLanguage } from "@/context/LanguageContext";
+
+
+// export default function Page({ params }) {
+//    const { invintation_id } = params;
+//    // const { t, i18n } = useTranslation();
+
+//    // const { language } = useLanguage();
+//    const [eventClientData, setEventClientData] = useState(null);
+//    // const t = useTranslations();
+//    const router = useRouter();
+//    const origin = useOrigin();
+//    const { t } = useTranslation('common');
+
+//    const supabase = createClient();
+
+//    const logOut = async () => {
+//       const { error } = await supabase.auth.signOut()
+//       router.push(origin + "/register-for-event/" + invintation_id + "/?login=true");
+//    }
+
+//    const { data: event } = useSWR(invintation_id + "m", async () => {
+//       const { data, error } = await supabase
+//          .from("events")
+//          .select("*")
+//          .eq("invintation_id", invintation_id);
+
+//       if (error) {
+//          console.error(error);
+//          return;
+//       }
+//       console.log(data)
+//       return data.length !== 0 ? data[0] : null;
+//    });
+
+
+
+//    useEffect(() => {
+//       if (event) {
+//          (async () => {
+//             const { error, data } = await supabase
+//                .from("client_data")
+//                .select("*")
+//                .eq("user_id", event.user_id)
+
+//             if (error) {
+//                console.error(error);
+//                setEventClientData(null);
+//                return;
+//             }
+//             console.log(data)
+//             if (data.length !== 0) {
+//                setEventClientData(data[0]);
+//             }
+//          })()
+//       }
+
+//    }, [event])
+//    // const changeLanguage = (lang) => {
+//    //    router.push(`/${lang}`); // Переключение между языками
+//    //  };
+
+//    // const { t, i18n } = useTranslation();
+
+//    // useEffect(() => {
+//    //   i18n.changeLanguage("fi"); // Установить язык на клиенте
+//    // }, []);
+
+//    return (
+//       <div className='bg-black text-white min-h-screen h-full'>
+//          <section className='page-header-image-monkija relative'>
+//             <div className="absolute inset-0 bg-black/50"></div>
+//             <div className='relative z-10 top-[20%]'>
+//                {eventClientData && eventClientData.logo && (
+//                   <div className='flex justify-center w-full'>
+//                      <img src={"https://supa.crossmedia.fi/storage/v1/object/public/" + eventClientData.logo} className='w-40 text-center' alt="Logo" />
+//                   </div>
+//                )}
+
+//                <h1 className='text-center font-semibold text-3xl mb-5'>{t("v1")}</h1>
+//                <p className='text-center text-xl text-clientprimary'>Motocross Rider</p>
+//             </div>
+//          </section>
+//          <section className="py-5 px-2 flex max-md:block items-center justify-center space-x-4 max-md:space-x-0 max-md:space-y-3 container mx-auto">
+//             <Button className="py-6 bg-clientprimary hover:bg-clientprimary max-md:w-full">
+//                <Link
+//                   href={`/event/${invintation_id}/feed`}
+//                   className='text-lg'
+//                >
+//                   {t("v2")}
+//                </Link>
+//             </Button>
+
+//             <Button className="py-6 bg-clientprimary hover:bg-clientprimary max-md:w-full">
+//                <Link
+//                   target="_blank"
+//                   rel="noopener noreferrer"
+//                   href={"https://g.page/r/CXOHqSFUTPxuEAE/review"}
+//                   className='text-lg'
+//                >
+//                   {t("v3")}
+//                </Link>
+//             </Button>
+//             <button onClick={() => changeLanguage("fi")}>Сменить на Финский</button>
+//             <button onClick={() => changeLanguage("en")}>Сменить на Английский</button>
+//             {/* <button onClick={() => changeLanguage('fi')}>Suomi</button>
+//             <button onClick={() => changeLanguage('en')}>English</button> */}
+//             <Button className="text-lg py-6 bg-clientprimary hover:bg-clientprimary max-md:w-full" onClick={() => logOut()}>
+//                {t("v4")}
+//             </Button>
+//          </section>
+//          <section className='container mx-auto px-3'>
+//             {eventClientData && eventClientData.welcome_text && (
+//                <div
+//                   className='text-white'
+//                   dangerouslySetInnerHTML={{ __html: eventClientData.welcome_text }}
+//                />
+//             )}
+//          </section>
+//          <section className="container mx-auto px-3 flex mt-10 text-lg">
+//             <div>
+//                <p>{t("v5")}</p>
+//                <p>{t("v6")}</p>
+//                <p>{t("v7")}</p>
+//                <p>{t("v8")}</p>
+//             </div>
+//             <div className='ml-10'>
+//                {event?.event_time && <p>{format(new Date(event.event_date), 'dd.MM.yyyy')} {event.event_time.slice(0, 5)}</p>}
+//                <p>-</p>
+//                {event?.instructions_file && (
+//                   <p>
+//                      <Link target="_blank" rel="noopener noreferrer" className='text-white text-lg block underline' href={`https://supa.crossmedia.fi/storage/v1/object/public/${event?.instructions_file}`}>Ohjeistus</Link>
+//                   </p>
+//                )}
+//                {event?.additional_services.length && (
+//                   event?.additional_services.map(service => service + " ")
+//                )}
+//             </div>
+//          </section>
+//       </div>
+//    );
+// }
+
+
+
 "use client"
 import '../../custom.css'
-
+// import { useTranslation } from "react-i18next";
 import { useOrigin } from '@/hooks/use-origin';
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import useSWR from "swr";
-import { useEffect } from 'react';
-import { Menu } from 'lucide-react';
-
-import {
-   Menubar,
-   MenubarContent,
-   MenubarItem,
-   MenubarMenu,
-   MenubarSeparator,
-   MenubarShortcut,
-   MenubarTrigger,
-} from "@/components/ui/menubar"
+import { useEffect, useState } from 'react';
+import { format } from 'date-fns';
+// import { useTranslation } from 'next-i18next';
+// import { useLanguage } from "@/context/LanguageContext";
 
 
 export default function Page({ params }) {
    const { invintation_id } = params;
+   // const { t, i18n } = useTranslation();
 
+   // const { language } = useLanguage();
+   const [eventClientData, setEventClientData] = useState(null);
+   // const t = useTranslations();
    const router = useRouter();
    const origin = useOrigin();
+   // const { t } = useTranslation('common');
+
    const supabase = createClient();
 
    const logOut = async () => {
-
       const { error } = await supabase.auth.signOut()
       router.push(origin + "/register-for-event/" + invintation_id + "/?login=true");
-
    }
 
    const { data: event } = useSWR(invintation_id + "m", async () => {
@@ -46,58 +199,114 @@ export default function Page({ params }) {
          return;
       }
       console.log(data)
-      return data.length !== 0 ? data : null;
+      return data.length !== 0 ? data[0] : null;
    });
+
+
+
+   useEffect(() => {
+      if (event) {
+         (async () => {
+            const { error, data } = await supabase
+               .from("client_data")
+               .select("*")
+               .eq("user_id", event.user_id)
+
+            if (error) {
+               console.error(error);
+               setEventClientData(null);
+               return;
+            }
+            console.log(data)
+            if (data.length !== 0) {
+               setEventClientData(data[0]);
+            }
+         })()
+      }
+
+   }, [event])
 
    return (
       <div className='bg-black text-white min-h-screen h-full'>
-         {/* {console.log(event[0].instructions_file)} */}
-         {/* {event && event[0]?.instructions_file && (
-            <iframe
-               src={`https://supa.crossmedia.fi/storage/v1/object/public/client_data/7862b87f-7218-4cae-a3bd-e6a8acc741aa/instructions/DrQiN`}
-               style={{ width: '100%', height: '600px' }}
-               frameBorder="0"
+         <section className='relative h-[300px]'>
+            <img
+               src="https://crossmedia.fi/holvi/poistielta/img/banner-monkija.jpg"
+               alt="Monkija Banner"
+               className="absolute inset-0 w-full h-full object-cover"
             />
-         )} */}
-
-         {/* <div className="page-header-image-monkija"></div>
-         <Button variant="link">
-            <Link href={`/event/${invintation_id}/feed`} className='text-lg'>Kuvasyöte</Link>
-         </Button> */}
-         {/* <Button variant="link">
-            <Link href={"/logout?event_invite_id=" + invintation_id} className='text-lg'>Kirjaudu ulos</Link>
-         </Button> */}
-         {/* <Button variant="" className="text-lg" onClick={() => logOut()}>
-            Kirjaudu ulos
-         </Button>
-         <Button className="mt-5">
-            <Link href={"https://g.page/r/CXOHqSFUTPxuEAE/review"} className='text-lg font-normal'>Arvostele meitä Googlessa</Link>
-         </Button> */}
-
-         <section className='page-header-image-monkija relative'>
             <div className="absolute inset-0 bg-black/50"></div>
             <div className='relative z-10 top-[20%]'>
-               <div className='flex justify-center w-full'>
-                  <img src="/Poistielta-Logo.svg" className='w-40 text-center' alt="Logo" />
-               </div>
-               <h1 className='text-center font-semibold text-3xl mb-5'>Tervetuloa tapahtumaan!</h1>
-               <p className='text-center text-xl text-orange-600'>Motocross Rider</p>
+               {eventClientData && eventClientData.logo && (
+                  <div className='flex justify-center w-full'>
+                     <img src={"https://supa.crossmedia.fi/storage/v1/object/public/" + eventClientData.logo} className='w-40 text-center' alt="Logo" />
+                  </div>
+               )}
+
+               <h1 className='text-center font-semibold text-3xl mb-5'>Tervetuloa tapahtumaan</h1>
+               <p className='text-center text-xl text-clientprimary'>{event?.event_name}</p>
             </div>
          </section>
-         <section className="space-y-3 py-5 px-2">
-            <Button className="w-full py-6 bg-orange-600">
-               <Link href={`/event/${invintation_id}/feed`} className='text-lg'>Näytä tunnelmat</Link>
+         <section className="py-5 px-2 flex max-md:block items-center justify-center space-x-4 max-md:space-x-0 max-md:space-y-3 container mx-auto">
+            <Button className="py-6 bg-clientprimary hover:bg-clientprimary max-md:w-full">
+               <Link
+                  href={`/event/${invintation_id}/feed`}
+                  className='text-lg'
+               >
+                  Näytä tunnelmat
+               </Link>
             </Button>
-            <Button className="w-full py-6 bg-orange-600">
-               <Link href={"https://g.page/r/CXOHqSFUTPxuEAE/review"} className='text-lg'>Arvostele meitä Googlessa</Link>
+            <Button className="py-6 bg-clientprimary hover:bg-clientprimary max-md:w-full">
+               <a
+                  // target="_blank"
+                  // rel="noopener noreferrer"
+                  href={"https://" + eventClientData && eventClientData?.google_link ? eventClientData?.google_link : ''}
+                  className='text-lg'
+               >
+                  Arvostele meitä Googlessa
+               </a>
             </Button>
-            <Button className="w-full text-lg py-6 bg-orange-600" onClick={() => logOut()}>
+            {/* <button onClick={() => changeLanguage('fi')}>Suomi</button>
+            <button onClick={() => changeLanguage('en')}>English</button> */}
+            <Button className="text-lg py-6 bg-clientprimary hover:bg-clientprimary max-md:w-full" onClick={() => logOut()}>
                Kirjaudu ulos
             </Button>
          </section>
-         <section>
-            <Link className='text-white text-lg block mb-5 ' href={`https://supa.crossmedia.fi/storage/v1/object/public/client_data/7862b87f-7218-4cae-a3bd-e6a8acc741aa/instructions/DrQiN`}>Tässä on ohjeistus</Link>
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Officiis nulla ex aperiam aliquam officia voluptatem? Pariatur, minus doloremque quae inventore omnis delectus temporibus cupiditate odit tempore, ipsam repellendus deleniti vero.
+         <section className='container mx-auto px-3'>
+            {eventClientData && eventClientData.welcome_text && (
+               <div
+                  className='text-white'
+                  dangerouslySetInnerHTML={{ __html: eventClientData.welcome_text }}
+               />
+            )}
+         </section>
+         <section className="container mx-auto px-3 flex mt-10 text-lg">
+            <div>
+               <p>Tapahtuman aika: </p>
+               <p>Tapahtuman paikka: </p>
+               <p>Tapahtuman ohjeistus: </p>
+               <p>Tapahtuman lisäpalvelut: </p>
+            </div>
+            <div className='ml-10'>
+               {event?.event_time && <p>{format(new Date(event.event_date), 'dd.MM.yyyy')} {event.event_time.slice(0, 5)}</p>}
+               {event?.event_place && <span>{event?.event_address}, </span>}
+               {event?.event_place && <span className="capitalize">{event?.event_place}</span>}
+               {event?.instructions_file && (
+                  <p>
+                     <Link target="_blank" rel="noopener noreferrer" className='text-white text-lg block underline' href={`https://supa.crossmedia.fi/storage/v1/object/public/${event?.instructions_file}`}>Ohjeistus</Link>
+                  </p>
+               )}
+               {event?.additional_services.length && (
+                  event?.additional_services.map(service => service + " ")
+               )}
+            </div>
+         </section>
+         <section className='container mx-auto my-5 px-3'>
+            {eventClientData && eventClientData.sub_description && (
+               <div
+                  className='text-white'
+                  dangerouslySetInnerHTML={{ __html: eventClientData.sub_description }}
+               />
+            )}
          </section>
       </div>
    );

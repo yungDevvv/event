@@ -78,14 +78,14 @@ export function NavUser({
             </div>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
+        {/* <DropdownMenuSeparator /> */}
+        {/* <DropdownMenuGroup>
           <DropdownMenuItem className="gap-2">
             <BadgeCheck className="h-4 w-4 text-muted-foreground" />
             Account
           </DropdownMenuItem>
 
-        </DropdownMenuGroup>
+        </DropdownMenuGroup> */}
         <DropdownMenuSeparator />
         <DropdownMenuItem className="gap-2" onClick={() => signOut()}>
           <LogOut className="h-4 w-4 text-muted-foreground" />

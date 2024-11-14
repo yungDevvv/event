@@ -93,9 +93,9 @@ const ClientSidebarContent = () => {
             <div className="relative flex items-center w-full cursor-pointer">
                <Button variant="ghost" className="p-0 min-w-8 w-full justify-start flex h-8 items-center gap-2 overflow-hidden rounded-md px-2 text-sm font-normal text-foreground ring-ring transition-all hover:bg-accent hover:text-accent-foreground focus-visible:ring-2">
                   <Settings className="h-4 w-4 shrink-0" />
-                  <div className="flex flex-1 overflow-hidden select-none">
+                  <Link href="/dashboard/settings" className="flex flex-1 overflow-hidden select-none">
                      <div className="line-clamp-1 pr-6 font-semibold text-base">Asetukset</div>
-                  </div>
+                  </Link>
                </Button>
             </div>
          </SidebarItem>

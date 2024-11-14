@@ -3,11 +3,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { EventProvider } from "@/context/EventContext";
 import { createClient } from "@/lib/supabase/server";
 import getAuthUser from "@/lib/supabase/user";
-import { House, Image } from "lucide-react";
-
-export default async function EventLayout({ children, params }) {
+import { getMessages } from 'next-intl/server'
+async function EventLayout({ children, params }) {
    const user = await getAuthUser();
-
    const supabase = createClient();
 
    const { invintation_id } = params;
@@ -32,7 +30,6 @@ export default async function EventLayout({ children, params }) {
       .eq('event_id', event[0].id)
       .eq('user_id', user.id)
 
-   console.log(event[0].id, user.id)
    if (memberError) {
       console.error(memberError);
       return <Error text="500 Internal Server Error" />
@@ -46,11 +43,15 @@ export default async function EventLayout({ children, params }) {
    const userData = user;
 
    return (
-      <EventProvider value={{ eventData, userData }}>
-         <main className="w-full h-full min-h-screen">
-            {children}
-         </main>
-         <Toaster />
-      </EventProvider>
+     
+         <EventProvider value={{ eventData, userData }}>
+            <main className="w-full h-full min-h-screen">
+               {children}
+            </main>
+            <Toaster />
+         </EventProvider>
+      
    );
 }
+
+export default EventLayout;

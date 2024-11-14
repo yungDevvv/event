@@ -74,7 +74,7 @@ export default function Page({ searchParams }) {
       }
       
       if(data && data.user) {
-         router.push(origin + "/login");
+         router.push(origin + "/");
       }
       
       setIsLoading(false);

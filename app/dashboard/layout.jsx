@@ -12,11 +12,16 @@ export default async function DashboardLayout({ children }) {
   // const { cookies } = await import("next/headers")
   const supabase = createClient();
   const user = await getAuthUser();
-  const user1 = await supabase.from("users").select("*").eq("id", user.id)
+
+  const { data: clientData, error } = await supabase
+    .from("client_data")
+    .select("logo")
+    .eq("user_id", user.id);
+  
   return (
     // <SidebarLayout defaultOpen={cookies().get("sidebar:state")?.value === "true"}>
     <SidebarLayout defaultOpen={true}>
-      <MainSidebar user={user} user1={user1} />
+      <MainSidebar user={user} clientData={clientData.length !== 0 ? clientData[0] : null} />
       <main
         className="flex flex-1 flex-col p-6 max-lg:p-2 transition-all duration-300 ease-in-out">
         <div className="h-full">

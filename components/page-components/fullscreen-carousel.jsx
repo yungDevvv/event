@@ -34,7 +34,7 @@ const FullscreenCarousel = ({ event_id }) => {
    useEffect(() => {
       const handleKeyDown = (event) => {
          if (event.key === 'Escape') {
-            router.push(`/dashboard/events/${event_id}/diaesitys`);
+            router.push(`/dashboard/events/${event_id}/diaesitys?offline=true`);
          }
       };
 
@@ -59,9 +59,28 @@ const FullscreenCarousel = ({ event_id }) => {
       return () => clearInterval(intervalRef.current);
    }, [data]);
 
-   if (isLoading) return <div className="w-full min-h-screen h-full flex items-center justify-center"><Loader2 className="text-zinc-200 animate-spin" size={48} /></div>;
-   if (error) return <div className="text-white">{error.message}</div>;
+   const toggleFullscreen = async () => {
+      try {
+        if (document.fullscreenElement) {
+          await document.exitFullscreen();
+        } else {
+          await document.documentElement.requestFullscreen();
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Virhe: Fullscreen-tilan vaihtaminen epäonnistui.")
+      }
+    };
 
+    useEffect(() => {
+  
+      document.body.addEventListener("click", toggleFullscreen);
+  
+      return () => {
+        document.body.removeEventListener("click", toggleFullscreen);
+      };
+    }, []);
+  
    return (
       <div className="w-full h-screen bg-black">
          <Carousel loop={true} className="w-full h-full">

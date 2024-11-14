@@ -26,11 +26,11 @@ body {
 .page-header-image-monkija {
    background-color: #000000;
    background-image: url(https://crossmedia.fi/holvi/poistielta/img/banner-monkija.jpg);
-   background-position: center center;
+   /* background-position: center center; */
    background-repeat: no-repeat;
    background-size: cover;
    width: 100%;
-   height: 400px;
+   height: 320px;
    padding: 0;
 }
 
