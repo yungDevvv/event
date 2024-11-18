@@ -222,12 +222,13 @@ import { useEffect, useState } from "react"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { useOrigin } from "@/hooks/use-origin"
+import { useTranslations } from "next-intl"
 // import { useTranslation } from 'next-i18next';
 
 
 export const PostList = ({ posts, favoritesList, user, isValidating, addToFavorites, mutate }) => {
    const { toast } = useToast();
-   // const { t } = useTranslation('common');
+   
 
    const deletePost = async (postID) => {
       const supabase = createClient();
@@ -265,9 +266,9 @@ export const PostList = ({ posts, favoritesList, user, isValidating, addToFavori
 function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite }) {
    const [fileType, setFileType] = useState(null);
    const [shareText, setShareText] = useState("");
-   const [open, setOpen] = useState(false);
    const ORIGIN = useOrigin();
-
+   const t  = useTranslations();
+   
    const share = async () => {
       if (!navigator.canShare) {
          toast({
@@ -330,12 +331,12 @@ function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite })
                      ? (
                         <DropdownMenuItem className="flex items-center text-base" onClick={() => deletePost(post.id)}>
                            <Delete size={20} className="mr-2" />
-                           <span>Poista</span>
+                           <span>{t("r1")}</span>
                         </DropdownMenuItem>
                      ) : (
                         <DropdownMenuItem className="flex items-center">
                            <ShieldAlert size={20} className="mr-2" />
-                           <span>Raportoi</span>
+                           <span>{t("r2")}</span>
                         </DropdownMenuItem>
                      )
                   }

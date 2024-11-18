@@ -52,7 +52,7 @@ import { useEffect, useState } from 'react';
 
 
 
-const CKeditor = ({ content, handleChange }) => {
+const CKeditor = ({ content, handleChange, onReady }) => {
    const [isLayoutReady, setIsLayoutReady] = useState(false);
 
    const editorConfig = {
@@ -238,6 +238,7 @@ const CKeditor = ({ content, handleChange }) => {
                editor={ClassicEditor}
                onChange={handleChange}
                config={editorConfig}
+               onReady={onReady}
             />
          }
       </>

@@ -13,7 +13,7 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-export const metadata = { 
+export const metadata = {
   title: "Respa - App",
   description: "Respasolutions Oy",
 };

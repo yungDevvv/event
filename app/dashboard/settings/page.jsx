@@ -5,13 +5,11 @@ import SettingsOtherForm from "@/components/forms/client/settings-other-form";
 import SettingsPrivacyForm from "@/components/forms/client/settings-privacy-form";
 import { createClient } from "@/lib/supabase/server";
 import getAuthUser from "@/lib/supabase/user";
-// import dynamic from 'next/dynamic';
 
 export default async function Page() {
    const user = await getAuthUser();
    const supabase = createClient();
-   // const SettingsCkeditorForm = dynamic(() => import('@/components/forms/settings-ckeditor-form'), { ssr: false });
-   console.log(user.id)
+  
    const { data: clientData, error: clientDataError } = await supabase
       .from("client_data")
       .select("*")

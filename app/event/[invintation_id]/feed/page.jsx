@@ -144,14 +144,13 @@ import { useTabs } from "@/hooks/use-tabs";
 import { MoveLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation"
-// import { useTranslation } from 'next-i18next';
+import { useTranslations } from 'next-intl';
 
 export default function Page() {
    const { eventData, userData } = useEventContext();
-   // console.log(process.env.SUPABASE_HOST,
-   //    process.env.SUPABASE_ANON_KEY, "asdasdad")
 
-   // const { t } = useTranslation('common');
+   const t = useTranslations();
+
    const router = useRouter();
    const { tab, setTab } = useTabs();
    const { posts, isLoading, setSize, isReachingEnd, isValidating, mutate } = useInfinitePosts(2, eventData.id);
@@ -206,19 +205,19 @@ export default function Page() {
             <div className="flex py-5 items-center max-md:flex-wrap max-xs:px-2">
                <Button variant="link" className="text-lg p-0 flex items-center max-md:border border-black text-clientprimary" onClick={() => router.push("/event/" + eventData.invintation_id)}>
                   <MoveLeft className="mr-2 max-md:m-0 text-clientprimary" />
-                  <span className="max-md:hidden">Takaisin</span>
+                  <span className="max-md:hidden">{t("w1")}</span>
                </Button>
                <div className="mx-2 max-md:w-full max-md:block">
                   <Separator className="rotate-90 w-6 text-clientprimary border-clientprimary bg-clientprimary max-md:hidden" />
                </div>
                <Button variant="link" className={cn("underline text-clientprimary text-lg p-0 mr-5 opacity-40 font-semibold", tab === "" && "opacity-1")} onClick={() => setTab("")}>
-                  Kaikki
+                  {t("w2")}
                </Button>
                <Button variant="link" className={cn("underline text-clientprimary text-lg p-0 mr-5 opacity-40 font-semibold", tab === "my" && 'opacity-1')} onClick={() => setTab("my")}>
-                  Minun lähetetyt
+                  {t("w3")}
                </Button>
                <Button variant="link" className={cn("underline text-clientprimary text-lg p-0 opacity-40 font-semibold", tab === "favorites" && 'opacity-1')} onClick={() => setTab("favorites")}>
-                  Minun suosikit
+                  {t("w4")}
                </Button>
             </div>
 

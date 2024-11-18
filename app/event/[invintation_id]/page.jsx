@@ -156,8 +156,8 @@
 
 
 "use client"
+
 import '../../custom.css'
-// import { useTranslation } from "react-i18next";
 import { useOrigin } from '@/hooks/use-origin';
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
@@ -166,20 +166,18 @@ import { useRouter } from 'next/navigation';
 import useSWR from "swr";
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-// import { useTranslation } from 'next-i18next';
-// import { useLanguage } from "@/context/LanguageContext";
+import { useTranslations } from 'next-intl';
+import LanguageSwitcher from '@/components/language-switcher';
 
 
 export default function Page({ params }) {
    const { invintation_id } = params;
-   // const { t, i18n } = useTranslation();
+   const t = useTranslations();
 
-   // const { language } = useLanguage();
    const [eventClientData, setEventClientData] = useState(null);
-   // const t = useTranslations();
    const router = useRouter();
    const origin = useOrigin();
-   // const { t } = useTranslation('common');
+
 
    const supabase = createClient();
 
@@ -227,8 +225,9 @@ export default function Page({ params }) {
    }, [event])
 
    return (
-      <div className='bg-black text-white min-h-screen h-full'>
+      <div className='text-white  h-full'>
          <section className='relative h-[300px]'>
+            <LanguageSwitcher className={"absolute top-5 right-5 z-50"} />
             <img
                src="https://crossmedia.fi/holvi/poistielta/img/banner-monkija.jpg"
                alt="Monkija Banner"
@@ -241,18 +240,18 @@ export default function Page({ params }) {
                      <img src={"https://supa.crossmedia.fi/storage/v1/object/public/" + eventClientData.logo} className='w-40 text-center' alt="Logo" />
                   </div>
                )}
-
-               <h1 className='text-center font-semibold text-3xl mb-5'>Tervetuloa tapahtumaan</h1>
+               <h1 className='text-center font-semibold text-3xl mb-5'>{t("v1")}</h1>
                <p className='text-center text-xl text-clientprimary'>{event?.event_name}</p>
             </div>
          </section>
          <section className="py-5 px-2 flex max-md:block items-center justify-center space-x-4 max-md:space-x-0 max-md:space-y-3 container mx-auto">
+
             <Button className="py-6 bg-clientprimary hover:bg-clientprimary max-md:w-full">
                <Link
                   href={`/event/${invintation_id}/feed`}
                   className='text-lg'
                >
-                  Näytä tunnelmat
+                  {t("v2")}
                </Link>
             </Button>
             <Button className="py-6 bg-clientprimary hover:bg-clientprimary max-md:w-full">
@@ -262,13 +261,11 @@ export default function Page({ params }) {
                   href={"https://" + eventClientData && eventClientData?.google_link ? eventClientData?.google_link : ''}
                   className='text-lg'
                >
-                  Arvostele meitä Googlessa
+                  {t("v3")}
                </a>
             </Button>
-            {/* <button onClick={() => changeLanguage('fi')}>Suomi</button>
-            <button onClick={() => changeLanguage('en')}>English</button> */}
             <Button className="text-lg py-6 bg-clientprimary hover:bg-clientprimary max-md:w-full" onClick={() => logOut()}>
-               Kirjaudu ulos
+               {t("v4")}
             </Button>
          </section>
          <section className='container mx-auto px-3'>
@@ -279,13 +276,22 @@ export default function Page({ params }) {
                />
             )}
          </section>
+         <section className='container mx-auto my-5 px-3'>
+            {event && event.event_description && (
+               <div
+                  className='text-white'
+                  dangerouslySetInnerHTML={{ __html: event.event_description }}
+               />
+            )}
+         </section>
          <section className="container mx-auto px-3 flex mt-10 text-lg">
             <div>
-               <p>Tapahtuman aika: </p>
-               <p>Tapahtuman paikka: </p>
-               <p>Tapahtuman ohjeistus: </p>
-               <p>Tapahtuman lisäpalvelut: </p>
+               <p>{t("v5")}</p>
+               <p>{t("v6")}</p>
+               <p>{t("v7")}</p>
+               <p>{t("v8")}</p>
             </div>
+            
             <div className='ml-10'>
                {event?.event_time && <p>{format(new Date(event.event_date), 'dd.MM.yyyy')} {event.event_time.slice(0, 5)}</p>}
                {event?.event_place && <span>{event?.event_address}, </span>}
@@ -300,7 +306,7 @@ export default function Page({ params }) {
                )}
             </div>
          </section>
-         <section className='container mx-auto my-5 px-3'>
+         <section className='container mx-auto mt-5 px-3'>
             {eventClientData && eventClientData.sub_description && (
                <div
                   className='text-white'

@@ -3,12 +3,20 @@ import { Toaster } from "@/components/ui/toaster";
 import { EventProvider } from "@/context/EventContext";
 import { createClient } from "@/lib/supabase/server";
 import getAuthUser from "@/lib/supabase/user";
-import { getMessages } from 'next-intl/server'
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
+import { cookies } from 'next/headers';
+
 async function EventLayout({ children, params }) {
+   const { invintation_id } = params;
+   // const locale = cookies().get('locale')?.value || 'fi'; 
+
+   const messages = await getMessages();
+
    const user = await getAuthUser();
    const supabase = createClient();
 
-   const { invintation_id } = params;
+
 
    const { data: event, error: eventError } = await supabase
       .from('events')
@@ -43,14 +51,14 @@ async function EventLayout({ children, params }) {
    const userData = user;
 
    return (
-     
+      <NextIntlClientProvider  messages={messages}>
          <EventProvider value={{ eventData, userData }}>
-            <main className="w-full h-full min-h-screen">
+            <main className="w-full h-full min-h-screen bg-black">
                {children}
             </main>
             <Toaster />
          </EventProvider>
-      
+      </NextIntlClientProvider>
    );
 }
 

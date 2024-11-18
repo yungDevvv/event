@@ -36,6 +36,26 @@ const ClientSidebarContent = () => {
    return (
       <SidebarContent>
          <SidebarItem>
+            <div className="relative flex items-center w-full cursor-pointer">
+               <Button variant="ghost" className="p-0 min-w-8 w-full justify-start flex h-8 items-center gap-2 overflow-hidden rounded-md px-2 text-sm font-normal text-foreground ring-ring transition-all hover:bg-accent hover:text-accent-foreground focus-visible:ring-2">
+                  <Settings className="h-4 w-4 shrink-0" />
+                  <Link href="/dashboard/settings" className="flex flex-1 overflow-hidden select-none">
+                     <div className="line-clamp-1 pr-6 font-semibold text-base">Perustiedot</div>
+                  </Link>
+               </Button>
+            </div>
+         </SidebarItem>
+         <SidebarItem>
+            <div className="relative flex items-center w-full cursor-pointer">
+               <Button variant="ghost" className="p-0 min-w-8 w-full justify-start flex h-8 items-center gap-2 overflow-hidden rounded-md px-2 text-sm font-normal text-foreground ring-ring transition-all hover:bg-accent hover:text-accent-foreground focus-visible:ring-2">
+                  <CalendarFold className="h-4 w-4 shrink-0" />
+                  <Link href="/dashboard/events" className="flex flex-1 overflow-hidden select-none">
+                     <div className="line-clamp-1 pr-6 font-semibold text-base">Tapahtumat</div>
+                  </Link>
+               </Button>
+            </div>
+         </SidebarItem>
+         {/* <SidebarItem>
             <ul className="grid gap-0.5">
                <Collapsible defaultOpen={false}>
                   <li>
@@ -58,9 +78,9 @@ const ClientSidebarContent = () => {
                            </div>
                         </CollapsibleTrigger>
                      </div>
-
+               
                      {/* Collapsible Content */}
-                     <CollapsibleContent className="px-4 py-0.5">
+         {/* <CollapsibleContent className="px-4 py-0.5">
                         <ul className="grid border-l px-2">
                            <li>
                               <Button
@@ -88,17 +108,8 @@ const ClientSidebarContent = () => {
                </Collapsible>
 
             </ul>
-         </SidebarItem>
-         <SidebarItem>
-            <div className="relative flex items-center w-full cursor-pointer">
-               <Button variant="ghost" className="p-0 min-w-8 w-full justify-start flex h-8 items-center gap-2 overflow-hidden rounded-md px-2 text-sm font-normal text-foreground ring-ring transition-all hover:bg-accent hover:text-accent-foreground focus-visible:ring-2">
-                  <Settings className="h-4 w-4 shrink-0" />
-                  <Link href="/dashboard/settings" className="flex flex-1 overflow-hidden select-none">
-                     <div className="line-clamp-1 pr-6 font-semibold text-base">Asetukset</div>
-                  </Link>
-               </Button>
-            </div>
-         </SidebarItem>
+         </SidebarItem>  */}
+
       </SidebarContent>
    )
 }
