@@ -64,13 +64,12 @@ const SettingsGoogleForm = ({ recordExists, user, google_link }) => {
    }
 
    return (
-      <div className='w-full flex items-center'>
-         <div className='w-full max-w-[40%] mr-5'>
-            <h1 className='font-semibold'>Google arvostelu</h1>
-            <p className='text-zinc-600 leading-tight'>Syöttää google arvostelu linkki.</p>
+      <div className='w-full'>
+         <div className='w-full'>
+            <h1 className='font-semibold'>Google arvostelun linkki</h1>
+            <p className='text-zinc-600 leading-tight'>Lisää tähän oma googlen arvostelulinkkisi, arvostelupainike näkyy palvelun etusivulla.</p>
          </div>
-         <div className="w-full max-w-[60%]">
-
+         <div className="w-full mt-5">
             <Input
                type="text"
                value={inputValue}

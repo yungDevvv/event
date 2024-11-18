@@ -43,7 +43,7 @@ const SidebarLayout = React.forwardRef(({ defaultOpen, className, ...props }, re
           }
         }
         className={cn(
-          "flex min-h-screen bg-accent/50 pl-0 transition-all duration-300 ease-in-out data-[sidebar=closed]:pl-0 sm:pl-[--sidebar-width]",
+          "flex min-h-screen pl-0 transition-all duration-300 ease-in-out data-[sidebar=closed]:pl-0 sm:pl-[--sidebar-width]",
           className
         )}
         {...props} />

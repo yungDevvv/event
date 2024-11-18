@@ -63,12 +63,12 @@ const SettingsOtherForm = ({ recordExists, user, sub_description }) => {
 	};
 
 	return (
-		<div className='w-full flex'>
-			<div className='w-full max-w-[40%] mr-5'>
-				<h1 className='font-semibold'>Tapahtuman lisätiedot</h1>
-				<p className='text-zinc-600 leading-tight'>Voit lisätä tähän kaikki tapahtumaan liittyvät lisätiedot, jotka voivat olla hyödyllisiä osallistujille.</p>
+		<div className='w-full'>
+			<div className='w-full mr-5'>
+				<h1 className='font-semibold'>Lisätietoja</h1>
+				<p className='text-zinc-600 leading-tight'>Lisätiedot näkyvät tapahtuman etusivulla, voit lisätä siihen jotain tilapäistä ohjeistusta tms. Osallistujille.</p>
 			</div>
-			<div className="w-full max-w-[59%]">
+			<div className="w-full mt-5">
 				<CKeditor content={content} handleChange={handleChange} />
 				<Button
 					onClick={handleSave}

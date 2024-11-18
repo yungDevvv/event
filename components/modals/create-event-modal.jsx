@@ -23,7 +23,7 @@ import { useModal } from '@/hooks/use-modal';
 import { Eye, Loader2, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { generateId, generateInviteId } from '@/lib/utils';
+import { cn, generateId, generateInviteId } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import CKeditor from '../ck-editor';
@@ -424,8 +424,8 @@ const CreateEventModal = () => {
    useEffect(() => {
       if (eventData) {
          setEventDescriptionText(eventData.event_description)
-         // console.log("EVENT DATA EVENT DATA EVENT DATA", eventData, "EVENT DATA EVENT DATA EVENT DATA")
          const newEventDate = new Date(eventData.event_date)
+
          reset({
             eventName: eventData.event_name || '',
             clientName: eventData.client_name || '',
@@ -446,7 +446,7 @@ const CreateEventModal = () => {
       <Dialog open={isModalOpen} onOpenChange={onClose}>
          <DialogContent className='bg-white text-black p-0'>
             <DialogHeader className='pt-3 px-6'>
-               <DialogTitle className='text-2xl text-center font-bold'>
+               <DialogTitle className='text-2xl text-center font-bold' onClick={() => console.log(form.getValues("instructionsFile"))}>
                   {data.edit
                      ? "Muokkaa tapahtuma"
                      : "Luo uusi tapahtuma"
@@ -636,69 +636,41 @@ const CreateEventModal = () => {
                         content={eventDescriptionText}
                         handleChange={handleChange} />
                   </div>
-
-                  {/* <div className="flex max-sm:block max-sm:space-y-3">
-                     <FormField
-                        control={form.control}
-                        name="instructionsFile"
-                        render={({ field }) => (
-                           <FormItem className="mr-1">
-                              <FormLabel className="block mb-1">Tapahtumaohjeistus</FormLabel>
-                              <FormControl className="cursor-pointer">
-                                 <Input type="file" onChange={(e) => field.onChange(e.target.files)} />
-                              </FormControl>
-                              <FormMessage />
-                              {console.log(eventData)}
-                              {eventData && eventData?.instructions_file && <Link className='block mt-1 underline text-center' target="_blank" rel="noopener noreferrer" href={"https://supa.crossmedia.fi/storage/v1/object/public/" + eventData?.instructions_file}>Aktiivinen ohjeistus</Link>}
-                           </FormItem>
-                        )}
-                     />
-
-                     <FormField
-                        control={form.control}
-                        name="eventImage"
-                        render={({ field }) => (
-                           <FormItem className="ml-1">
-                              <FormLabel className="block mb-1">Tapahtuman kuva</FormLabel>
-                              <FormControl className="cursor-pointer">
-                                 <Input type="file" onChange={(e) => {
-                                    field.onChange(e.target.files)
-                                    setEventImage(e.target?.files[0] ? e.target.files[0] : null)
-                                 }} />
-                              </FormControl>
-                              <FormMessage />
-                              {eventData && eventData?.event_image && <img className='mt-2 h-[80px] rounded-md w-full object-cover' src={"https://supa.crossmedia.fi/storage/v1/object/public/" + eventData?.event_image} />}
-                              {eventImage && <img className='mt-2 h-[80px] rounded-md w-full object-cover' src={URL.createObjectURL(eventImage)} />} {console.log(eventImage)}
-                           </FormItem>
-                        )}
-                     />
-                  </div> */}
                   <div className="flex max-sm:block max-sm:space-y-3">
                      <FormField
                         control={form.control}
                         name="instructionsFile"
                         render={({ field }) => (
                            <FormItem className="mr-1 max-sm:ml-0 w-full">
-                              <FormLabel className="block mb-1">Tapahtumaohjeistus</FormLabel>
+                              <FormLabel className="block mb-1" >Tapahtumaohjeistus</FormLabel>
                               <FormControl className="cursor-pointer">
                                  <label className='w-full flex items-center justify-center cursor-pointer bg-clientprimary text-white h-9 px-3 py-1 rounded-md font-semibold'>
-                                    <span className="text-sm">{eventData && eventData?.instructions_file ? "Vaihda ohjeistus" : "Lataa ohjeistus"}</span>
+                                    
+                                    {form.getValues("instructionsFile") 
+                                       ? <span className="text-sm italic">{form.getValues("instructionsFile")[0].name}</span>
+                                       : <span className="text-sm">{form.formState.defaultValues.instructionsFile ? "Vaihda ohjeistus" : "Lataa ohjeistus"}</span>
+                                    }
+                                    
                                     <Input type="file" className="hidden" onChange={(e) => field.onChange(e.target.files)} />
                                  </label>
-                                 {/* <Button className="mr-2" type="button" onClick={(e) => e.stopPropagation()}>
-                                    <label
-                                       htmlFor="event_instructions"
-                                       className="cursor-pointer w-full h-full"
-                                       onClick={(e) => e.stopPropagation()}
-                                    >
-                                       Lataa ohjeistus
-                                    </label>
-                                    
-                                 </Button> */}
-
                               </FormControl>
                               <FormMessage />
-                              {eventData && eventData?.instructions_file && (
+                              {console.log(form.formState.defaultValues.instructionsFile)}
+                              {form.getValues("instructionsFile") && (
+                                 <div className="w-full flex items-center justify-between">
+                                    
+                                    <Button variant="link" type="button" asChild>
+                                       <Link className='flex items-center !p-0 !h-7' target="_blank" rel="noopener noreferrer" href={URL.createObjectURL(form.getValues("instructionsFile")[0])}><Eye className="mr-1 w-5 h-5" /> Näytä uusi ohjeistus</Link>
+                                    </Button>
+                                    <span className="cursor-pointer" onClick={() => {
+                                       setValue("instructionsFile", null);
+                                    }}>
+                                       <X className="w-4 h-4" />
+                                    </span>
+                                 </div>
+                              )}
+
+                              {eventData && eventData?.instructions_file && form.getValues("instructionsFile") === null && (
                                  <Button variant="link" type="button" asChild>
                                     <Link className='flex items-center !p-0 !h-7' target="_blank" rel="noopener noreferrer" href={"https://supa.crossmedia.fi/storage/v1/object/public/" + eventData?.instructions_file}><Eye className="mr-1 w-5 h-5" /> Näytä ohjeistus</Link>
                                  </Button>
@@ -714,8 +686,12 @@ const CreateEventModal = () => {
                            <FormItem className="ml-1 max-sm:ml-0 w-full">
                               <FormLabel className="block mb-1">Tapahtuman kuva</FormLabel>
                               <FormControl className="cursor-pointer">
-                                 <label className='w-full flex items-center justify-center cursor-pointer bg-clientprimary text-white h-9 px-3 py-1 rounded-md font-semibold'>
-                                    <span className="text-sm">{eventData && eventData?.event_image ? "Vaihda kuva" : "Lataa kuva"}</span>
+                                 <label className={cn('w-full flex items-center justify-center cursor-pointer bg-clientprimary text-white h-9 px-3 py-1 rounded-md font-semibold', eventImage && 'italic')}>
+                                    {eventImage 
+                                       ? <span className="text-sm">{eventImage.name}</span>
+                                       : <span className="text-sm">{eventData && eventData?.event_image ? "Vaihda kuva" : "Lataa kuva"}</span>
+                                    }
+                                    
                                     <Input type="file" className="hidden" onChange={(e) => {
                                        field.onChange(e.target.files)
                                        setEventImage(e.target?.files[0] ? e.target.files[0] : null)
@@ -743,7 +719,6 @@ const CreateEventModal = () => {
                                     </span>
                                  </div>
                               )}
-                              {/* {eventImage && <img className='mt-2 h-[80px] rounded-md w-full object-cover' src={URL.createObjectURL(eventImage)} />} */}
                            </FormItem>
 
                         )}

@@ -1,5 +1,4 @@
 import {
-   ChevronRight,
    CalendarFold,
    Settings
 } from "lucide-react";
@@ -7,53 +6,36 @@ import {
 import {
    SidebarContent,
    SidebarItem,
-   useSidebar,
 } from "@/components/ui/sidebar";
-
-import {
-   Collapsible,
-   CollapsibleContent,
-   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-
-import {
-   Select,
-   SelectContent,
-   SelectGroup,
-   SelectItem,
-   SelectTrigger,
-   SelectValue,
-} from "@/components/ui/select";
 
 import { Button } from "@/components/ui/button"
 
 import Link from "next/link";
-import { useModal } from "@/hooks/use-modal";
+import { usePathname } from 'next/navigation';
+import { cn } from "@/lib/utils";
 
 const ClientSidebarContent = () => {
-   const { onOpen } = useModal();
-   const { onOpenChange } = useSidebar();
+   const pathname = usePathname();
+   const lastSegment = pathname.split('/').pop();
+
+
    return (
       <SidebarContent>
-         <SidebarItem>
-            <div className="relative flex items-center w-full cursor-pointer">
-               <Button variant="ghost" className="p-0 min-w-8 w-full justify-start flex h-8 items-center gap-2 overflow-hidden rounded-md px-2 text-sm font-normal text-foreground ring-ring transition-all hover:bg-accent hover:text-accent-foreground focus-visible:ring-2">
-                  <Settings className="h-4 w-4 shrink-0" />
-                  <Link href="/dashboard/settings" className="flex flex-1 overflow-hidden select-none">
-                     <div className="line-clamp-1 pr-6 font-semibold text-base">Perustiedot</div>
-                  </Link>
-               </Button>
-            </div>
+         <SidebarItem className="relative flex items-center w-full cursor-pointer">
+            <Button variant="ghost" className={cn("p-0 min-w-8 w-full justify-start flex h-11 items-center gap-3 rounded-lg px-2 text-sm font-normal transition-all hover:bg-white hover:outline hover:outline-1 outline-zinc-200", lastSegment === "settings" && "bg-white outline outline-zinc-200 outline-1 hover:bg-white")}>
+               <Settings className={cn("h-5 w-5 shrink-0", lastSegment === "settings" && "text-orange-400")} />
+               <Link href="/dashboard/settings" className="flex flex-1 overflow-hidden select-none">
+                  <div className={cn("line-clamp-1 pr-6 text-base tracking-wide text-black", lastSegment === "settings" && "font-medium")}>Perustiedot</div>
+               </Link>
+            </Button>
          </SidebarItem>
-         <SidebarItem>
-            <div className="relative flex items-center w-full cursor-pointer">
-               <Button variant="ghost" className="p-0 min-w-8 w-full justify-start flex h-8 items-center gap-2 overflow-hidden rounded-md px-2 text-sm font-normal text-foreground ring-ring transition-all hover:bg-accent hover:text-accent-foreground focus-visible:ring-2">
-                  <CalendarFold className="h-4 w-4 shrink-0" />
-                  <Link href="/dashboard/events" className="flex flex-1 overflow-hidden select-none">
-                     <div className="line-clamp-1 pr-6 font-semibold text-base">Tapahtumat</div>
-                  </Link>
-               </Button>
-            </div>
+         <SidebarItem className="relative flex items-center w-full cursor-pointer ">
+            <Button variant="ghost" className={cn("p-0 min-w-8 w-full justify-start flex h-11 items-center gap-3 rounded-md px-2 text-sm font-normal transition-all hover:bg-white hover:outline hover:outline-1 outline-zinc-200", lastSegment === "events" && "bg-white outline outline-zinc-200 outline-1 hover:bg-white")}>
+               <CalendarFold className={cn("h-5 w-5 shrink-0", lastSegment === "events" && "text-orange-400")} />
+               <Link href="/dashboard/events" className="flex flex-1 overflow-hidden select-none">
+                  <div className={cn("line-clamp-1 pr-6 text-base tracking-wide", lastSegment === "events" && "font-medium")}>Tapahtumat</div>
+               </Link>
+            </Button>
          </SidebarItem>
          {/* <SidebarItem>
             <ul className="grid gap-0.5">

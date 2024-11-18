@@ -21,11 +21,10 @@ export default async function Page() {
          <div>500 INTERNAL SERVER ERROR</div>
       )
    }
-
-   console.log(clientData)
+   
    return (
       <div>
-         <section className="my-6">
+         <section className="mb-6">
             <SettingsLogoForm
                user={user}
                recordExists={clientData.length !== 0}

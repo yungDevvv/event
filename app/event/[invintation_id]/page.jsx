@@ -244,7 +244,7 @@ export default function Page({ params }) {
                <p className='text-center text-xl text-clientprimary'>{event?.event_name}</p>
             </div>
          </section>
-         <section className="py-5 px-2 flex max-md:block items-center justify-center space-x-4 max-md:space-x-0 max-md:space-y-3 container mx-auto">
+         <section className="max-w-[900px] py-5 px-2 flex max-md:block items-center justify-center space-x-4 max-md:space-x-0 max-md:space-y-3 container mx-auto">
 
             <Button className="py-6 bg-clientprimary hover:bg-clientprimary max-md:w-full">
                <Link
@@ -254,21 +254,24 @@ export default function Page({ params }) {
                   {t("v2")}
                </Link>
             </Button>
-            <Button className="py-6 bg-clientprimary hover:bg-clientprimary max-md:w-full">
-               <a
-                  // target="_blank"
-                  // rel="noopener noreferrer"
-                  href={"https://" + eventClientData && eventClientData?.google_link ? eventClientData?.google_link : ''}
-                  className='text-lg'
-               >
-                  {t("v3")}
-               </a>
-            </Button>
+            {eventClientData && eventClientData?.google_link && (
+               <Button className="py-6 bg-clientprimary hover:bg-clientprimary max-md:w-full">
+                  <a
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     href={eventClientData && eventClientData?.google_link ? eventClientData?.google_link : ''}
+                     className='text-lg'
+                  >
+                     {t("v3")}
+                  </a>
+               </Button>
+            )}
+
             <Button className="text-lg py-6 bg-clientprimary hover:bg-clientprimary max-md:w-full" onClick={() => logOut()}>
                {t("v4")}
             </Button>
          </section>
-         <section className='container mx-auto px-3'>
+         <section className='container mx-auto px-3 mb-5 max-w-[900px]'>
             {eventClientData && eventClientData.welcome_text && (
                <div
                   className='text-white'
@@ -276,22 +279,14 @@ export default function Page({ params }) {
                />
             )}
          </section>
-         <section className='container mx-auto my-5 px-3'>
-            {event && event.event_description && (
-               <div
-                  className='text-white'
-                  dangerouslySetInnerHTML={{ __html: event.event_description }}
-               />
-            )}
-         </section>
-         <section className="container mx-auto px-3 flex mt-10 text-lg">
+         <section className="container mx-auto px-3 flex my-7 text-lg max-w-[900px]">
             <div>
                <p>{t("v5")}</p>
                <p>{t("v6")}</p>
                <p>{t("v7")}</p>
                <p>{t("v8")}</p>
             </div>
-            
+
             <div className='ml-10'>
                {event?.event_time && <p>{format(new Date(event.event_date), 'dd.MM.yyyy')} {event.event_time.slice(0, 5)}</p>}
                {event?.event_place && <span>{event?.event_address}, </span>}
@@ -306,7 +301,16 @@ export default function Page({ params }) {
                )}
             </div>
          </section>
-         <section className='container mx-auto mt-5 px-3'>
+         <section className='container mx-auto my-7 px-3 max-w-[900px]'>
+            {event && event.event_description && (
+               <div
+                  className='text-white'
+                  dangerouslySetInnerHTML={{ __html: event.event_description }}
+               />
+            )}
+         </section>
+ 
+         <section className='container mx-auto mt-7 px-3 max-w-[900px]'>
             {eventClientData && eventClientData.sub_description && (
                <div
                   className='text-white'

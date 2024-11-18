@@ -5,7 +5,7 @@ import { Button } from '../../ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from 'next/navigation';
-import { X } from 'lucide-react';
+import { Eye, X } from 'lucide-react';
 import { generateId } from '@/lib/utils';
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -28,14 +28,13 @@ const SettingsPrivacyForm = ({ recordExists, user, privacy }) => {
 
       if (file) {
          setRawSelectedFile(file);
-         console.log(file)
          const url = URL.createObjectURL(file);
-         console.log(url)
          setPdfUrl(url);
       }
    };
 
    const handleSubmitPDF = async () => {
+
       if (privacy !== null && selectedOption === "pdf" && privacy.pdf_privacy && !pdfUrl) {
          const { error } = await supabase
             .from('client_data')
@@ -65,6 +64,7 @@ const SettingsPrivacyForm = ({ recordExists, user, privacy }) => {
          });
 
          router.refresh();
+         setRawSelectedFile(null);
          return;
       }
 
@@ -138,10 +138,12 @@ const SettingsPrivacyForm = ({ recordExists, user, privacy }) => {
       }
 
       router.refresh();
+      setRawSelectedFile(null);
+      setPdfUrl(null);
    }
 
    const handleSubmitLink = async () => {
-      
+
       if (privacy !== null && selectedOption === "link" && privacy.link_privacy === inputValue) {
          const { error } = await supabase
             .from('client_data')
@@ -231,94 +233,86 @@ const SettingsPrivacyForm = ({ recordExists, user, privacy }) => {
       router.refresh();
    }
    return (
-      <div className='w-full flex items-center'>
-         <div className='w-full max-w-[40%] mr-5'>
+      <div className='w-full'>
+         <div className='w-full'>
             <h1 className='font-semibold' onClick={() => console.log(pdfUrl)}>Tietosuojaseloste</h1>
-            <p className='text-zinc-600 leading-tight'>Voit lähettää PDF-tiedoston tai laittaa linkki.</p>
+            <p className='text-zinc-600 leading-tight'>Tietosuojaseloste näkyy tapahtumasivun etusivulla, voit antaa linkin olemassa olevaan sivuun tai ladata erillisen PDF- tiedoston.</p>
          </div>
-         <div className="w-full max-w-[60%] flex items-center justify-between">
+         <div className="w-full mt-5">
             <RadioGroup onValueChange={(value) => setSelectedOption(value)} defaultValue={selectedOption}>
-               <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="link" id="link" />
-                  <Label htmlFor="link" className="font-normal">Käytä linkkiä</Label>
-               </div>
-               <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="pdf" id="pdf" />
-                  <Label htmlFor="pdf" className="font-normal">Käytä pdf</Label>
-               </div>
-            </RadioGroup>
-            <div className="flex flex-col max-w-[200px] w-full">
-               {selectedOption === "link" &&
-                  <Input
-                     type="text"
-                     value={inputValue}
-                     onChange={(e) => setInputValue(e.target.value)}
-                     className="bg-white w-full mb-1"
-                  />
-               }
-               {selectedOption === "pdf" && (
-                  <Button className="w-full mb-1">
-                     <label
-                        htmlFor="pdf-upload"
-                        className="cursor-pointer w-full h-full"
-                     >
-                        Lataa pdf
-                     </label>
-                     <input
-                        type="file"
-                        id="pdf-upload"
-                        accept='*'
-                        onChange={handleFileChanges}
-                        className="hidden"
+               <div className="flex items-center w-[40%] justify-between">
+                  <div className="flex items-center space-x-2 max-w-[30%] w-full">
+                     <RadioGroupItem value="link" id="link" />
+                     <Label htmlFor="link" className="font-normal">Käytä linkkiä</Label>
+                  </div>
+                  <div className='w-full ml-10'>
+                     <Input
+                        type="text"
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        className="bg-white w-full mb-1"
                      />
-                  </Button>
-               )}
-               {pdfUrl && selectedOption === "pdf" && (
-                  // <iframe src={pdfUrl} width="100%" height="200px" />
-                  <Link className='underline my-1 text-sm' href={pdfUrl}>Uusi ladattu tietosuojaseloste</Link>
-               )}
-               {privacy !== null && !pdfUrl && selectedOption === "pdf" &&
-                  <Link className='underline my-1 text-sm' href={"https://supa.crossmedia.fi/storage/v1/object/public/" + privacy.privacy}>Ladattu tietosuojaseloste</Link>
-               }
-               {/* {!privacy?.pdf_privacy && selectedOption === "pdf" && pdfUrl &&
-                  <Button
-                     onClick={handleSubmitPDF}
-                     className="w-full bg-orange-400 hover:bg-orange-500 mt-2"
-                  >
-                     Käytä pdf ja tallenna
-                  </Button>
-               }
-               {privacy?.pdf_privacy || selectedOption === "link" && (
-                  <Button
-                     onClick={selectedOption === "pdf" ? handleSubmitPDF : handleSubmitLink}
-                     className="w-full bg-orange-400 hover:bg-orange-500 mt-2"
-                  >
-                     Käytä {selectedOption === "link" ? "linkkiä" : selectedOption} {(pdfUrl && selectedOption === "pdf") || (inputValue !== privacy?.link_privacy && selectedOption === "link") && "ja talenna"}
-                  </Button>)
-               } */}
-               {selectedOption === "pdf" && (privacy?.pdf_privacy || pdfUrl) && (
-                  <Button
-                     onClick={handleSubmitPDF}
-                     className="w-full bg-orange-400 hover:bg-orange-500 mt-1"
-                  >
-                     {pdfUrl && selectedOption === "pdf"
-                        ? "Käytä pdf ja tallenna"
-                        : "Käytä pdf"
-                     } 
-                  </Button>
-               )}
-               {selectedOption === "link" && inputValue && (
-                  <Button
-                     onClick={handleSubmitLink}
-                     className="w-full bg-orange-400 hover:bg-orange-500 mt-1"
-                  >
-                     {inputValue !== privacy?.link_privacy && selectedOption === "link"
-                        ? "Käytä linkkiä ja tallenna"
-                        : "Käytä linkkiä"
-                     } 
-                  </Button>
-               )}
-            </div>
+                  </div>
+               </div>
+               <div className="flex items-center w-[40%] justify-between mt-3">
+                  <div className="flex items-center space-x-2 max-w-[30%] w-full">
+                     <RadioGroupItem value="pdf" id="pdf" />
+                     <Label htmlFor="pdf" className="font-normal">Käytä pdf</Label>
+                  </div>
+                  <div className='w-full ml-10'>
+                     <Button className="w-full mb-1">
+                        {rawSelectedFile
+                           ? <label
+                              htmlFor="pdf-upload"
+                              className="cursor-pointer w-full h-full italic"
+                           >
+                              {rawSelectedFile.name}
+                           </label>
+                           : <label
+                              htmlFor="pdf-upload"
+                              className="cursor-pointer w-full h-full"
+                           >
+                              Lisää tietosuojaseloste
+                           </label>
+                        }
+                        <input
+                           type="file"
+                           id="pdf-upload"
+                           accept='*'
+                           onChange={handleFileChanges}
+                           className="hidden"
+                        />
+                     </Button>
+
+                     {pdfUrl && (
+                        <div className='w-full flex items-center justify-between'>
+                           <Button variant="link" type="button" asChild>
+                              <Link className='flex items-center !p-0 !h-7' target="_blank" rel="noopener noreferrer" href={pdfUrl}><Eye className="mr-1 w-5 h-5" /> Uusi ladattu tietosuojaseloste</Link>
+                           </Button>
+                           <span className="cursor-pointer" onClick={() => {
+                              setRawSelectedFile(null);
+                              setPdfUrl(null);
+                           }}>
+                              <X className="w-4 h-4" />
+                           </span>
+                        </div>
+
+                     )}
+                     {console.log(privacy)}
+                     {privacy !== null && !pdfUrl && (
+                        <Button variant="link" type="button" asChild>
+                           <Link className='flex items-center !p-0 !h-7' target="_blank" rel="noopener noreferrer" href={"https://supa.crossmedia.fi/storage/v1/object/public/" + privacy.pdf_privacy}><Eye className="mr-1 w-5 h-5" /> Näytä tietosuojaseloste</Link>
+                        </Button>
+                     )}
+                  </div>
+               </div>
+               <Button
+                  onClick={selectedOption === "link" ? handleSubmitLink : handleSubmitPDF}
+                  className="bg-orange-400 hover:bg-orange-500 mt-2 justify-self-start"
+               >
+                  Tallenna
+               </Button>
+            </RadioGroup>
          </div>
       </div>
    );

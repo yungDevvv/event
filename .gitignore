@@ -19,7 +19,7 @@
 # misc
 .DS_Store
 *.pem
-
+package_test.js
 # debug
 npm-debug.log*
 yarn-debug.log*

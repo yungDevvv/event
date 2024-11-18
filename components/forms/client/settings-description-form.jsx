@@ -62,12 +62,12 @@ const SettingsDescriptionForm = ({recordExists, user, welcome_text }) => {
 	};
 
 	return (
-		<div className='w-full flex'>
+		<div className='w-full'>
 			<div className='w-full max-w-[40%] mr-5'>
-				<h1 className='font-semibold'>Tapahtuman yleiskuvaus</h1>
-				<p className='text-zinc-600 leading-tight'>Voit lisätä tähän kaikki tapahtuman pääkohdat, aikataulut, sijainnin tai muita osallistujille hyödyllisiä yksityiskohtia.</p>
+				<h1 className='font-semibold'>Tervehdysteksti</h1>
+				<p className='text-zinc-600 leading-tight'>Tervehdys näkyy kaikille osallistujille tapahtuman etusivulla.</p>
 			</div>
-			<div className="w-full max-w-[59%]">
+			<div className="w-full mt-5">
 				<CKeditor content={content} handleChange={handleChange} />
 				<Button
 					onClick={handleSave}

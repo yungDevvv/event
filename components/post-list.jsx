@@ -354,7 +354,7 @@ function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite })
             {/* <video autoPlay muted loop controls className="rounded-xl w-full h-full object-contain" src={"https://supa.crossmedia.fi/storage/v1/object/public/" + post.image_url} /> */}
             {/* <img className="rounded-xl w-full h-full object-cover" src={"https://supa.crossmedia.fi/storage/v1/object/public/" + post.image_url} /> */}
          </div>
-         <div className="w-full flex">
+         <div className="w-full flex mt-2">
             <PostCardComments user_id={user.id} event_post_id={post.id} />
             <div className={cn(
                'bg-zinc-100 rounded-full flex items-center px-4 py-2 cursor-pointer',

@@ -22,7 +22,7 @@ function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased h-full min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} font-sans tracking-wide h-full min-h-screen`}
       >
         {children}
         {/* <ModalProvider /> */}

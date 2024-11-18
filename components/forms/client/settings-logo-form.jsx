@@ -96,44 +96,43 @@ const SettingsLogoForm = ({ recordExists, user, logo }) => {
    }
 
    return (
-      <div className='w-full flex items-center'>
-         <div className='w-full max-w-[40%] mr-5'>
-            <h1 className='font-semibold'>Yrityksen logo</h1>
+      <div className='flex'>
+         <div>
+            <h1 className='font-semibold' onClick={console.log(selectedFile)}>Yrityksen logo</h1>
             <p className='text-zinc-600 leading-tight'>Lataa oma yrityksesi logo.</p>
-         </div>
-         <div className="w-full max-w-[60%]">
-            <div className='max-w-[150px] relative mb-2'>
-               {selectedFile && <X onClick={() => {
-                  setSelectedFile(null);
-                  setRawSelectedFile(null);
-               }} size={18} className="absolute -top-2 -right-2 cursor-pointer" />}
-               {selectedFile && <img src={selectedFile} alt="company_logo" />}
-               {logo !== null && selectedFile === null && <img src={"https://supa.crossmedia.fi/storage/v1/object/public/" + logo} alt="company_logo" />}
-            </div>
-            <Button className="mr-2">
-               <label
-                  htmlFor="logo-upload"
-                  className="cursor-pointer w-full h-full"
-               >
-                  Lataa logo
-               </label>
-               <input
-                  type="file"
-                  id="logo-upload"
-                  onChange={handleFileChange}
-                  accept="image/*"
-                  className="hidden" // Hides the file input
-               />
-            </Button>
-            {selectedFile && (
-               <Button
-                  onClick={handleSubmit}
-                  className="bg-orange-400 hover:bg-orange-500 mt-2"
-               >
-                  Tallenna
+            <div className='mt-4'>
+               <Button className="mr-2 mt-auto">
+                  <label
+                     htmlFor="logo-upload"
+                     className="cursor-pointer w-full h-full"
+                  >
+                     {rawSelectedFile ? <span className='italic'>{rawSelectedFile.name}</span> : <span>Lataa logo</span>}
+                  </label>
+                  <input
+                     type="file"
+                     id="logo-upload"
+                     onChange={handleFileChange}
+                     accept="image/*"
+                     className="hidden" // Hides the file input
+                  />
                </Button>
-            )}
-
+               {selectedFile && (
+                  <Button
+                     onClick={handleSubmit}
+                     className="bg-orange-400 hover:bg-orange-500 mt-4"
+                  >
+                     Tallenna
+                  </Button>
+               )}
+            </div>
+         </div>
+         <div className='max-w-[150px] w-full relative ml-10'>
+            {selectedFile && <X onClick={() => {
+               setSelectedFile(null);
+               setRawSelectedFile(null);
+            }} size={18} className="absolute -top-2 -right-2 cursor-pointer" />}
+            {selectedFile && <img src={selectedFile} alt="company_logo" />}
+            {logo !== null && selectedFile === null && <img src={"https://supa.crossmedia.fi/storage/v1/object/public/" + logo} alt="company_logo" />}
          </div>
       </div>
    );

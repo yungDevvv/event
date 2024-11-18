@@ -14,6 +14,7 @@ module.exports = {
 			colors: {
 				whited: "#F5F6F7",
 				clientprimary: "#FF8F00",
+				clientprimaryhover: "#E57F00",
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				card: {
