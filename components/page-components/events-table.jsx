@@ -125,7 +125,7 @@ const EventsTable = ({ data, user }) => {
    return (
       <div>
          <div className="w-full text-right">
-            <Button className="bg-clientprimary hover:bg-clientprimary" onClick={() => onOpen("create-event", { edit: false })}>Uusi tapahtuma</Button>
+            <Button className="bg-orange-400 hover:bg-orange-500 mb-3" onClick={() => onOpen("create-event", { edit: false })}>Uusi tapahtuma</Button>
          </div>
          <Table>
             <TableCaption>Tapahtumien lista</TableCaption>
@@ -241,7 +241,7 @@ const EventsTable = ({ data, user }) => {
                      </TableRow>
                   ))
                   : <TableRow>
-                     <TableCell colSpan="5" className="text-center">Ei luotuja tapahtumia.</TableCell>
+                     <TableCell colSpan="8" className="text-center">Ei luotuja tapahtumia.</TableCell>
                   </TableRow>
                }
             </TableBody>

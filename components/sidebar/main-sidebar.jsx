@@ -33,7 +33,7 @@ export function MainSidebar({ user, clientData }) {
       {user.role === "superadmin" && <AdminSidebarContent />}
       {user.role === "member" && <p className="text-semibold text-lg py-3 text-center">You are member!</p>}
       {/* <ClientSidebarContent /> */}
-      <SidebarFooter>
+      <SidebarFooter className="bg-white">
         <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
