@@ -91,7 +91,7 @@ const Sidebar = React.forwardRef(({ className, children }, ref) => {
     return (
       (<Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent
-          className="w-[260px] p-0 md:w-[--sidebar-width] [&>button]:hidden"
+          className="w-[240px] p-0 md:w-[--sidebar-width] [&>button]:hidden"
           side="left">
           {sidebar}
         </SheetContent>

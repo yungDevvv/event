@@ -13,7 +13,7 @@ import AdminSidebarContent from "./roles/admin-sidebar-content"
 
 export function MainSidebar({ user, clientData }) {
   return (
-    <Sidebar className="bg-accent/60">
+    <Sidebar className="bg-accent/60 ">
       <SidebarHeader className="justify-center">
         {clientData !== null
           ? <img className="max-h-[100px] h-full" src={"https://supa.crossmedia.fi/storage/v1/object/public/" + clientData.logo} />

@@ -127,7 +127,7 @@ const EventsTable = ({ data, user }) => {
          <div className="text-left max-md:text-right max-md:inline-block max-md:float-right">
             <Button className="bg-orange-400 hover:bg-orange-500 mb-3" onClick={() => onOpen("create-event", { edit: false })}>Uusi tapahtuma</Button>
          </div>
-         <div className="overflow-x-auto max-w-[1200px] w-full">
+         <div className="overflow-x-auto w-full">
             <Table className="min-w-full table-auto">
                <TableCaption>
                   {data.length === 0 && "Ei luotuja tapahtumia"}
