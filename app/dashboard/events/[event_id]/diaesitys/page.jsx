@@ -126,8 +126,7 @@ export default function Page({ params, searchParams }) {
                      : "Ei ole kuvia vielä."
                   }
                </div>
-
-               <Button className="mt-4 text-lg" onClick={() => handleSave()}>Talenna ja aloita diaesitys</Button>
+               {posts && posts.length !== 0 && <Button className="mt-4 text-lg" onClick={() => handleSave()}>Talenna ja aloita diaesitys</Button>}
             </Fragment>
          )}
 

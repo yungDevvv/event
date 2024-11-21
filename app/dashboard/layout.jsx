@@ -7,6 +7,7 @@ import {
 import getAuthUser from "@/lib/supabase/user";
 import { ModalProvider } from "@/components/providers/modal-provider";
 import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({ children }) {
   // const { cookies } = await import("next/headers")
@@ -18,6 +19,10 @@ export default async function DashboardLayout({ children }) {
     .select("logo")
     .eq("user_id", user.id);
   
+
+  if(user.role === "member") {
+    return redirect("/");
+  }
   return (
     // <SidebarLayout defaultOpen={cookies().get("sidebar:state")?.value === "true"}>
     <SidebarLayout defaultOpen={true}>

@@ -37,13 +37,14 @@ export function NavUser({
       alert("Oops, tapahtui virhe")
     }
     
-    router.push("/login")
+    router.push("/login");
+    router.refresh();
   }
 
   return (
     (<DropdownMenu className="bg-white">
       <DropdownMenuTrigger
-        className="w-full rounded-md outline-none ring-ring hover:bg-accent focus-visible:ring-2 data-[state=open]:bg-accent bg-white">
+        className="w-full rounded-md outline-none ring-ring data-[state=open]:bg-accent bg-white">
         <div
           className="flex items-center gap-2 px-2 py-1.5 text-left text-sm transition-all">
           {/* <Avatar className="h-7 w-7 rounded-md border">
@@ -56,6 +57,7 @@ export function NavUser({
           
           <div className="grid flex-1 leading-none">
             <div className="font-medium">{user.first_name} {user.last_name}</div>
+            <div className="text-sm text-zinc-500">{user.email}</div>
             {/* <div className="overflow-hidden text-xs text-muted-foreground">
               <div className="line-clamp-1">{user.email}</div>
             </div> */}
@@ -64,21 +66,21 @@ export function NavUser({
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" side="right" sideOffset={4}>
-        <DropdownMenuLabel className="p-0 font-normal">
-          <div
-            className="flex items-center gap-2 px-1 py-1.5 text-left text-sm transition-all">
+        {/* <DropdownMenuLabel className="p-0 font-normal"> */}
+          {/* <div
+            className="flex items-center gap-2 px-1 py-1.5 text-left text-sm transition-all"> */}
             {/* <Avatar className="h-7 w-7 rounded-md">
               <AvatarImage src={user.avatar} alt={user.name} />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar> */}
-            <div className="grid flex-1">
+            {/* <div className="grid flex-1">
               <div className="font-medium">{user.name}</div>
               <div className="overflow-hidden text-xs text-muted-foreground">
                 <div className="line-clamp-1">{user.email}</div>
               </div>
             </div>
           </div>
-        </DropdownMenuLabel>
+        </DropdownMenuLabel> */}
         {/* <DropdownMenuSeparator /> */}
         {/* <DropdownMenuGroup>
           <DropdownMenuItem className="gap-2">
@@ -87,10 +89,10 @@ export function NavUser({
           </DropdownMenuItem>
 
         </DropdownMenuGroup> */}
-        <DropdownMenuSeparator />
+        {/* <DropdownMenuSeparator /> */}
         <DropdownMenuItem className="gap-2" onClick={() => signOut()}>
           <LogOut className="h-4 w-4 text-muted-foreground" />
-          Log out
+          Kirjaudu ulos
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>)

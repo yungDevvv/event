@@ -7,13 +7,14 @@
   "v6": "Tapahtuman paikka: ",
   "v7": "Tapahtuman ohjeistus: ",
   "v8": "Tapahtuman lisäpalvelut: ",
+  "v9": "Tapahtuman ohjeistus",
   "w1": "Takaisin",
   "w2": "Kaikki",
-  "w3": "Minun lähetetyt",
-  "w4": "Minun suosikit",
+  "w3": "Omat",
+  "w4": "Suosikit",
   "r1": "Poista",
   "r2": "Raportoi",
   "r3": "Lataa",
-  "r4": "Jakaa"
-  
+  "r4": "Jakaa",
+  "m1": "Lähetä"
 }

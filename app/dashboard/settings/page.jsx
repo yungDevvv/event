@@ -36,7 +36,8 @@ export default async function Page() {
             <SettingsDescriptionForm
                user={user}
                recordExists={clientData.length !== 0}
-               welcome_text={clientData.length !== 0 && clientData[0].welcome_text ? clientData[0].welcome_text : null}
+               fi_welcome_text={clientData.length !== 0 && clientData[0].fi_welcome_text ? clientData[0].fi_welcome_text : null}
+               en_welcome_text={clientData.length !== 0 && clientData[0].en_welcome_text ? clientData[0].en_welcome_text : null}
             />
          </section>
          <hr></hr>
@@ -44,7 +45,8 @@ export default async function Page() {
             <SettingsOtherForm
                user={user}
                recordExists={clientData.length !== 0}
-               sub_description={clientData.length !== 0 && clientData[0].sub_description ? clientData[0].sub_description : null}
+               fi_sub_description={clientData.length !== 0 && clientData[0].fi_sub_description ? clientData[0].fi_sub_description : null}
+               en_sub_description={clientData.length !== 0 && clientData[0].en_sub_description ? clientData[0].en_sub_description : null}
             />
          </section>
          <hr></hr>

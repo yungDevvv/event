@@ -15,12 +15,13 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslations } from "next-intl";
 
 export default function UploadImage({ user_id, event_id, mutate }) {
    const [image, setImage] = useState(null);
    const [loading, setLoading] = useState(false);
    const [previewUrl, setPreviewUrl] = useState(null);
-   
+   const t = useTranslations();
    const router = useRouter();
    const { toast } = useToast(); 
 
@@ -117,11 +118,11 @@ export default function UploadImage({ user_id, event_id, mutate }) {
                   </button>
                </AlertDialogHeader>
                <div className="my-1 w-full h-full max-h-[450px] aspect-[3/4]">
-                  {previewUrl && <img src={previewUrl} className="rounded-xl w-full h-full object-cover" />}
+                  {previewUrl && <img src={previewUrl} className="rounded-xl w-full h-full object-contain" />}
                </div>
                <AlertDialogFooter>
                   <AlertDialogAction variant={"outline"} className="text-md" onClick={() => uploadImage()}>
-                     {loading ? <Loader2 className="animate-spin" /> : "Kyllä, jatkaa"}
+                     {loading ? <Loader2 className="animate-spin" /> : t("m1")}
                   </AlertDialogAction>
                </AlertDialogFooter>
             </AlertDialogContent>

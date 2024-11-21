@@ -98,7 +98,7 @@ const SettingsLogoForm = ({ recordExists, user, logo }) => {
    return (
       <div className='flex'>
          <div>
-            <h1 className='font-semibold' onClick={console.log(selectedFile)}>Yrityksen logo</h1>
+            <h1 className='font-semibold'>Yrityksen logo</h1>
             <p className='text-zinc-600 leading-tight'>Lataa oma yrityksesi logo.</p>
             <div className='mt-4'>
                <Button className="mr-2 mt-auto">

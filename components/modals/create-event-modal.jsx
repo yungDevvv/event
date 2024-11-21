@@ -8,7 +8,6 @@ import {
    DialogFooter,
    DialogDescription
 } from '@/components/ui/dialog'
-import dynamic from 'next/dynamic';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod";
 import { useForm } from 'react-hook-form';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import MultipleSelectWithCheckbox from "../ui/MultipleSelectWithCheckbox";
 import { useModal } from '@/hooks/use-modal';
 import { Eye, Loader2, X } from 'lucide-react';
@@ -37,6 +36,9 @@ const eventTypes = [
    { value: 'sahkopyoraily', label: 'Sähköpyöräily', image: '/images/sahkopyoraily.jpg' },
 ];
 
+const minutes = ["00", "15", "30", "45"];
+const hours = ["09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "00"];
+
 const formSchema = z.object({
    eventType: z.string().min(1, {
       message: "Valitse tapahtumatyyppi."
@@ -46,8 +48,9 @@ const formSchema = z.object({
    eventAddress: z.string().min(1, "Tapahtuman osoite vaaditaan."),
    eventPlace: z.string().min(1, "Tapahtuman paikka vaaditaan."),
    eventName: z.string().min(1, "Tapahtuman nimi vaaditaan."),
-   eventTime: z.string().min(1, "Valitse tapahtuman aika."),
    eventDate: z.date({ message: "Valitse tapahtuman päivämäärä." }),
+   eventTimeHours: z.any().optional(),
+   eventTimeMinutes: z.any().optional(),
    instructionsFile: z.any().optional(),
    additionalServices: z.any().optional(),
    eventImage: z.any().optional()
@@ -60,15 +63,19 @@ const CreateEventModal = () => {
    const { toast } = useToast();
    const { isOpen, onClose, type, data } = useModal();
 
-   const [eventData, setEventData] = useState({});
    const [eventImage, setEventImage] = useState(null);
-   const [eventDescriptionText, setEventDescriptionText] = useState();
+   const [eventDescriptionText, setEventDescriptionText] = useState(data?.event?.fi_event_description ? data.event.fi_event_description : "");
+   const [enEventDescriptionText, setEnEventDescriptionText] = useState(data?.event?.en_event_description ? data.event.en_event_description : "");
 
-   const handleChange = (event, editor) => {
+   const handleChangeFI = (event, editor) => {
       const data = editor.getData();
       setEventDescriptionText(data);
    };
 
+   const handleChangeEN = (event, editor) => {
+      const data = editor.getData();
+      setEnEventDescriptionText(data);
+   };
    const form = useForm({
       resolver: zodResolver(formSchema),
       defaultValues: {
@@ -79,7 +86,8 @@ const CreateEventModal = () => {
          eventAddress: '',
          eventPlace: '',
          groupSize: 1,
-         eventTime: '',
+         eventTimeHours: "00",
+         eventTimeMinutes: "00",
          additionalServices: [],
          instructionsFile: null,
          eventImage: null
@@ -92,7 +100,7 @@ const CreateEventModal = () => {
 
    const onSubmit = async (datar) => {
       const { data: { user } } = await supabase.auth.getUser();
-
+      console.log(datar)
       if (data?.duplicate) {
          /* Create Event */
          if (user) {
@@ -145,13 +153,14 @@ const CreateEventModal = () => {
                   group_size: datar.groupSize,
                   event_type: datar.eventType,
                   event_date: datar.eventDate,
-                  event_time: datar.eventTime,
+                  event_time: datar.eventTimeHours + ":" + datar.eventTimeMinutes + ":00",
                   event_address: datar.eventAddress,
                   event_place: datar.eventPlace,
-                  event_description: eventDescriptionText,
+                  fi_event_description: eventDescriptionText,
+                  en_event_description: enEventDescriptionText,
                   additional_services: datar.additionalServices,
-                  instructions_file: datar?.instructionsFile ? instructionUploadedFile.fullPath : eventData.instructions_file,
-                  event_image: datar?.eventImage ? eventImageUploadedFile.fullPath : eventData.event_image,
+                  instructions_file: datar?.instructionsFile ? instructionUploadedFile.fullPath : data?.event?.instructions_file,
+                  event_image: datar?.eventImage ? eventImageUploadedFile.fullPath : data?.event?.event_image,
                   invintation_id: generateId(),
                   user_id: user.id
                }).select();
@@ -167,7 +176,7 @@ const CreateEventModal = () => {
             /* ADD CREATOR AS MEMBER */
             const { error } = await supabase
                .from("event_member")
-               .insert({ event_id: createdEvent[0].id, user_id: user.id, active_event: createdEvent[0].invintation_id });
+               .insert({ event_id: createdEvent[0].id, user_id: user.id });
 
             if (error) {
                console.error(error);
@@ -251,16 +260,17 @@ const CreateEventModal = () => {
                   group_size: datar.groupSize,
                   event_type: datar.eventType,
                   event_date: datar.eventDate,
-                  event_time: datar.eventTime,
+                  event_time: datar.eventTimeHours + ":" + datar.eventTimeMinutes + ":00",
                   event_address: datar.eventAddress,
                   event_place: datar.eventPlace,
-                  event_description: eventDescriptionText,
+                  fi_event_description: eventDescriptionText,
+                  en_event_description: enEventDescriptionText,
                   additional_services: datar.additionalServices,
-                  instructions_file: datar?.instructionsFile ? instructionUploadedFile.fullPath : eventData.instructions_file,
-                  event_image: datar?.eventImage ? eventImageUploadedFile.fullPath : eventData.event_image
+                  instructions_file: datar?.instructionsFile ? instructionUploadedFile.fullPath : data?.event?.instructions_file,
+                  event_image: datar?.eventImage ? eventImageUploadedFile.fullPath : data?.event?.event_image
 
                })
-               .eq("id", eventData.id);
+               .eq("id", data.event.id);
 
             if (updateError) {
                console.error(updateError);
@@ -287,7 +297,8 @@ const CreateEventModal = () => {
          /* Create Event */
          if (user) {
             const instructionsFileName = `${user.id}/instructions/${generateInviteId()}`; // eventID/userID.png
-
+            const eventImageFileName = `${user.id}/event_image/${generateInviteId()}`;
+            
             let instructionUploadedFile;
             let eventImageUploadedFile;
 
@@ -333,13 +344,14 @@ const CreateEventModal = () => {
                   group_size: datar.groupSize,
                   event_type: datar.eventType,
                   event_date: datar.eventDate,
-                  event_time: datar.eventTime,
+                  event_time: datar.eventTimeHours + ":" + datar.eventTimeMinutes + ":00",
                   event_address: datar.eventAddress,
                   event_place: datar.eventPlace,
                   additional_services: datar.additionalServices,
-                  event_description: eventDescriptionText,
-                  instructions_file: datar?.instructionsFile ? instructionUploadedFile.fullPath : eventData.instructions_file,
-                  event_image: datar?.eventImage ? eventImageUploadedFile.fullPath : eventData.event_image,
+                  fi_event_description: eventDescriptionText,
+                  en_event_description: enEventDescriptionText,
+                  instructions_file: datar?.instructionsFile ? instructionUploadedFile.fullPath : data?.event?.instructions_file,
+                  event_image: datar?.eventImage ? eventImageUploadedFile.fullPath : data?.event?.event_image,
                   invintation_id: generateId(),
                   user_id: user.id
                }).select();
@@ -388,59 +400,30 @@ const CreateEventModal = () => {
       }
    };
 
-   const editorRef = useRef(null);
-
    useEffect(() => {
-      /* CKEditor */
-      if (editorRef.current) {
-         editorRef.current.setData(eventDescriptionText);
-      }
-   }, [eventDescriptionText]);
-
-   useEffect(() => {
-      const fetchEventData = async () => {
-         const event = await supabase
-            .from("events")
-            .select("*")
-            .eq("id", data.eventId);
-
-         if (event && event.error) {
-            console.error(event.error);
-            toast({
-               variant: "supabaseError",
-               description: "Tuntematon virhe ladattaessa tapahtumatietoja.",
-            });
-            return;
-         }
-
-         setEventData(...event.data)
-      }
-      if (data?.edit || data?.duplicate) {
-         fetchEventData();
-      }
-
-   }, [data, toast, supabase])
-
-   useEffect(() => {
-      if (eventData) {
-         setEventDescriptionText(eventData.event_description)
-         const newEventDate = new Date(eventData.event_date)
+      if (data && data.event) {
+         const newEventDate = new Date(data.event.event_date);
+         const time = data.event.event_time.split(":");
+         const minutes = time[1];
+         const hours = time[0];
 
          reset({
-            eventName: eventData.event_name || '',
-            clientName: eventData.client_name || '',
+            eventName: data.event.event_name || '',
+            clientName: data.event.client_name || '',
             eventDate: newEventDate || null,
-            eventType: eventData.event_type || '',
-            groupSize: eventData.group_size || 1,
-            eventTime: eventData.event_time || '',
-            additionalServices: eventData.additional_services || [],
-            eventAddress: eventData.event_address || '',
-            eventPlace: eventData.event_place || '',
+            eventType: data.event.event_type || '',
+            groupSize: data.event.group_size || 1,
+            eventTimeHours: hours,
+            eventTimeMinutes: minutes,
+            // eventTime: data.event.event_time || '',
+            additionalServices: data.event.additional_services || [],
+            eventAddress: data.event.event_address || '',
+            eventPlace: data.event.event_place || '',
             instructionsFile: null,
             eventImage: null
          });
       }
-   }, [eventData, reset]);
+   }, [data, reset]);
 
    return (
       <Dialog open={isModalOpen} onOpenChange={onClose}>
@@ -453,8 +436,9 @@ const CreateEventModal = () => {
                   }
                </DialogTitle>
             </DialogHeader>
-            <Form {...form}>
-               <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-[600px] mx-auto space-y-2 max-sm:mx-0 max-sm:px-4 px-6 overflow-y-auto">
+            <DialogDescription></DialogDescription>
+            <Form {...form} onSubmit={form.handleSubmit(onSubmit)}>
+               <form onSubmit={form.handleSubmit(onSubmit)} className="px-6 space-y-2 max-sm:mx-0">
                   <div className="flex max-sm:block max-sm:space-y-3">
 
                      {/* Client Name */}
@@ -529,7 +513,7 @@ const CreateEventModal = () => {
                         control={form.control}
                         name="eventDate"
                         render={({ field }) => (
-                           <FormItem className="mr-1 max-sm:mr-0 w-full">
+                           <FormItem className="mr-1 max-sm:mr-0 w-full ">
                               <FormLabel className="block mb-1">Tapahtuman päivämäärä</FormLabel>
                               <FormControl>
                                  <DatePicker {...field} />
@@ -541,24 +525,70 @@ const CreateEventModal = () => {
                      </FormField>
 
                      {/* Event Time */}
-                     <FormField
-                        control={form.control}
-                        name="eventTime"
-                        render={({ field }) => (
-                           <FormItem className="ml-1 max-sm:ml-0 w-full">
-                              <FormLabel className="block mb-1">Tapahtuman kellonaika</FormLabel>
-                              <FormControl>
-                                 <Input
-                                    type="time"
-                                    className="block cursor-pointer"
-                                    {...field}
-                                 />
-                              </FormControl>
-                              <FormMessage />
-                           </FormItem>
-                        )}
-                     >
-                     </FormField>
+                     <div className='w-full'>
+                        <FormLabel className="block mb-1">Tapahtuman kellonaika</FormLabel>
+                        <div className='flex w-full items-center'>
+                           <FormField
+                              control={form.control}
+                              name="eventTimeHours"
+                              render={({ field }) => (
+                                 <FormItem className="max-sm:ml-0 w-full">
+                                    <FormControl>
+                                       <Select
+                                          onValueChange={field.onChange}
+                                       >
+                                          <SelectTrigger className="w-full">
+                                             <SelectValue placeholder={data && data?.event?.event_time ? data.event.event_time.split(":")[0] : "00"} />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                             <SelectGroup>
+                                                {hours.map(hour => (
+                                                   <SelectItem className="m-0 p-1" key={hour} value={hour}>
+                                                      {hour}
+                                                   </SelectItem>
+                                                ))}
+                                             </SelectGroup>
+                                          </SelectContent>
+                                       </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                 </FormItem>
+                              )}
+                           >
+                           </FormField>
+                           <span className='px-1'> : </span>
+                           <FormField
+                              control={form.control}
+                              name="eventTimeMinutes"
+                              render={({ field }) => (
+                                 <FormItem className="max-sm:ml-0 w-full">
+                                    {/* <FormLabel className="block mb-1">Tapahtuman kellonaika</FormLabel> */}
+                                    <FormControl>
+                                       <Select
+                                          onValueChange={field.onChange}
+                                       >
+                                          <SelectTrigger className="w-full capitalize">
+                                             <SelectValue placeholder={data && data?.event?.event_time ? data.event.event_time.split(":")[1] : "00"} />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                             <SelectGroup>
+                                                {minutes.map(minutes => (
+                                                   <SelectItem key={minutes} value={minutes}>
+                                                      {minutes}
+                                                   </SelectItem>
+                                                ))}
+                                             </SelectGroup>
+                                          </SelectContent>
+                                       </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                 </FormItem>
+                              )}
+                           >
+                           </FormField>
+                        </div>
+
+                     </div>
                   </div>
 
                   <div className="flex max-sm:block max-sm:space-y-3">
@@ -589,7 +619,7 @@ const CreateEventModal = () => {
                                     onValueChange={field.onChange}
                                  >
                                     <SelectTrigger className="w-full capitalize">
-                                       <SelectValue placeholder={eventData && eventData.event_type ? eventData.event_type : "Valitse tapahtuman tyyppi"} />
+                                       <SelectValue placeholder={data && data?.event?.event_type ? data.event.event_type : "Valitse tapahtuman tyyppi"} />
                                     </SelectTrigger>
                                     <SelectContent>
                                        <SelectGroup>
@@ -627,15 +657,24 @@ const CreateEventModal = () => {
                      )}
                   />
 
-                  <div className='max-w-[462px]'>
-                     <FormLabel>Aikataulut</FormLabel>
-                     <CKeditor
-                        onReady={(editor) => {
-                           editorRef.current = editor;
-                        }}
-                        content={eventDescriptionText}
-                        handleChange={handleChange} />
+                  <div className='w-full'>
+                     <FormLabel>Ohjelma - FI / EN</FormLabel>
+                     <div className='flex'>
+                        <div className='max-w-[50%] w-full mr-1'>
+                           <CKeditor
+                              content={eventDescriptionText}
+                              handleChange={handleChangeFI} />
+                        </div>
+                        <div className='max-w-[50%] w-full ml-1'>
+                           <div className='w-[300px] relative'>
+                              <CKeditor
+                                 content={enEventDescriptionText}
+                                 handleChange={handleChangeEN} />
+                           </div>
+                        </div>
+                     </div>
                   </div>
+
                   <div className="flex max-sm:block max-sm:space-y-3">
                      <FormField
                         control={form.control}
@@ -645,20 +684,20 @@ const CreateEventModal = () => {
                               <FormLabel className="block mb-1" >Tapahtumaohjeistus</FormLabel>
                               <FormControl className="cursor-pointer">
                                  <label className='w-full flex items-center justify-center cursor-pointer bg-clientprimary text-white h-9 px-3 py-1 rounded-md font-semibold'>
-                                    
-                                    {form.getValues("instructionsFile") 
+
+                                    {form.getValues("instructionsFile")
                                        ? <span className="text-sm italic">{form.getValues("instructionsFile")[0].name}</span>
                                        : <span className="text-sm">{form.formState.defaultValues.instructionsFile ? "Vaihda ohjeistus" : "Lataa ohjeistus"}</span>
                                     }
-                                    
+
                                     <Input type="file" className="hidden" onChange={(e) => field.onChange(e.target.files)} />
                                  </label>
                               </FormControl>
                               <FormMessage />
-                              {console.log(form.formState.defaultValues.instructionsFile)}
+
                               {form.getValues("instructionsFile") && (
                                  <div className="w-full flex items-center justify-between">
-                                    
+
                                     <Button variant="link" type="button" asChild>
                                        <Link className='flex items-center !p-0 !h-7' target="_blank" rel="noopener noreferrer" href={URL.createObjectURL(form.getValues("instructionsFile")[0])}><Eye className="mr-1 w-5 h-5" /> Näytä uusi ohjeistus</Link>
                                     </Button>
@@ -670,9 +709,9 @@ const CreateEventModal = () => {
                                  </div>
                               )}
 
-                              {eventData && eventData?.instructions_file && form.getValues("instructionsFile") === null && (
+                              {data && data.event?.instructions_file && form.getValues("instructionsFile") === null && (
                                  <Button variant="link" type="button" asChild>
-                                    <Link className='flex items-center !p-0 !h-7' target="_blank" rel="noopener noreferrer" href={"https://supa.crossmedia.fi/storage/v1/object/public/" + eventData?.instructions_file}><Eye className="mr-1 w-5 h-5" /> Näytä ohjeistus</Link>
+                                    <Link className='flex items-center !p-0 !h-7' target="_blank" rel="noopener noreferrer" href={"https://supa.crossmedia.fi/storage/v1/object/public/" + data.event.instructions_file}><Eye className="mr-1 w-5 h-5" /> Näytä ohjeistus</Link>
                                  </Button>
                               )}
                            </FormItem>
@@ -687,11 +726,10 @@ const CreateEventModal = () => {
                               <FormLabel className="block mb-1">Tapahtuman kuva</FormLabel>
                               <FormControl className="cursor-pointer">
                                  <label className={cn('w-full flex items-center justify-center cursor-pointer bg-clientprimary text-white h-9 px-3 py-1 rounded-md font-semibold', eventImage && 'italic')}>
-                                    {eventImage 
+                                    {eventImage
                                        ? <span className="text-sm">{eventImage.name}</span>
-                                       : <span className="text-sm">{eventData && eventData?.event_image ? "Vaihda kuva" : "Lataa kuva"}</span>
+                                       : <span className="text-sm">{data && data.event?.event_image ? "Vaihda kuva" : "Lataa kuva"}</span>
                                     }
-                                    
                                     <Input type="file" className="hidden" onChange={(e) => {
                                        field.onChange(e.target.files)
                                        setEventImage(e.target?.files[0] ? e.target.files[0] : null)
@@ -700,9 +738,9 @@ const CreateEventModal = () => {
                               </FormControl>
                               <FormMessage />
 
-                              {eventData && eventData?.event_image && !eventImage && (
+                              {data && data.event?.event_image && !eventImage && (
                                  <Button variant="link" type="button" asChild>
-                                    <Link className='flex items-center !p-0 !h-7' target="_blank" rel="noopener noreferrer" href={"https://supa.crossmedia.fi/storage/v1/object/public/" + eventData?.event_image}><Eye className="mr-1 w-5 h-5" /> Näytä kuva</Link>
+                                    <Link className='flex items-center !p-0 !h-7' target="_blank" rel="noopener noreferrer" href={"https://supa.crossmedia.fi/storage/v1/object/public/" + data.event.event_image}><Eye className="mr-1 w-5 h-5" /> Näytä kuva</Link>
                                  </Button>
                               )}
 
@@ -737,3 +775,7 @@ const CreateEventModal = () => {
 }
 
 export default CreateEventModal;
+
+
+// create-event-modal.jsx:307 Uncaught (in promise) ReferenceError: eventImageFileName is not defined
+//     at onSubmit (create-event-modal.jsx:307:27)

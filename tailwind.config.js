@@ -9,7 +9,8 @@ module.exports = {
 	theme: {
 		extend: {
 			screens: {
-				'xs': '430px'
+				'xs': '430px',
+				'xxs': '385px'
 			},
 			colors: {
 				whited: "#F5F6F7",

@@ -11,14 +11,6 @@ import {
 import ClientSidebarContent from "./roles/client-sidebar-content"
 import AdminSidebarContent from "./roles/admin-sidebar-content"
 
-const data = {
-  user: {
-    name: "John Smit",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-}
-
 export function MainSidebar({ user, clientData }) {
   return (
     <Sidebar className="bg-accent/60">
@@ -29,7 +21,7 @@ export function MainSidebar({ user, clientData }) {
         }
       </SidebarHeader>
       
-      {user.role === "client" && <ClientSidebarContent />}
+      {user.role === "client" && <ClientSidebarContent user={user} />}
       {user.role === "superadmin" && <AdminSidebarContent />}
       {user.role === "member" && <p className="text-semibold text-lg py-3 text-center">You are member!</p>}
       {/* <ClientSidebarContent /> */}

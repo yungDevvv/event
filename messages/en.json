@@ -7,12 +7,14 @@
    "v6": "Event location: ",
    "v7": "Event instructions: ",
    "v8": "Additional event services: ",
+   "v9": "Event instructions",
    "w1": "Back",
    "w2": "All",
    "w3": "My Sent",
-   "w4": "My Favorites",
+   "w4": "Favorites",
    "r1": "Delete",
    "r2": "Report",
    "r3": "Download",
-   "r4": "Share"
+   "r4": "Share",
+   "m1": "Send"
 }

@@ -124,11 +124,13 @@ const EventsTable = ({ data, user }) => {
 
    return (
       <div>
-         <div className="w-full text-right">
+         <div className="w-full text-left">
             <Button className="bg-orange-400 hover:bg-orange-500 mb-3" onClick={() => onOpen("create-event", { edit: false })}>Uusi tapahtuma</Button>
          </div>
          <Table>
-            <TableCaption>Tapahtumien lista</TableCaption>
+            <TableCaption>
+               {data.length === 0 && "Ei luotuja tapahtumia"}
+            </TableCaption>
             <TableHeader>
                <TableRow>
                   <TableHead>Asiakkaan nimi</TableHead>
@@ -143,9 +145,9 @@ const EventsTable = ({ data, user }) => {
             </TableHeader>
             <TableBody>
                {data.length !== 0
-                  ? data.map(event => (
+                  && data.map(event => (
                      <TableRow key={event.id}>
-         
+
                         <TableCell className="font-medium">{event.client_name}</TableCell>
                         <TableCell className="font-medium">{event.event_name}</TableCell>
                         <TableCell className="capitalize">{event.event_type}</TableCell>
@@ -167,7 +169,8 @@ const EventsTable = ({ data, user }) => {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent side={"left"}>
                                  <DropdownMenuItem className="flex items-center" onClick={() => {
-                                    onOpen("create-event", { edit: true, eventId: event.id })
+                                    // onOpen("create-event", { edit: true, eventId: event.id })
+                                    onOpen("create-event", { edit: true, event: event })
                                     setOpenDropdownId(null);
                                  }}>
                                     <Pencil size={18} className="mr-2" />
@@ -183,7 +186,8 @@ const EventsTable = ({ data, user }) => {
                                     </Link>
                                  </DropdownMenuItem>
                                  <DropdownMenuItem className="flex items-center" onClick={() => {
-                                    onOpen("create-event", { edit: false, duplicate: true, eventId: event.id })
+                                    // onOpen("create-event", { edit: false, duplicate: true, eventId: event.id })
+                                    onOpen("create-event", { edit: false, duplicate: true, event: event })
                                     setOpenDropdownId(null);
                                  }}>
                                     <Pencil size={18} className="mr-2" />
@@ -240,9 +244,6 @@ const EventsTable = ({ data, user }) => {
                         </TableCell>
                      </TableRow>
                   ))
-                  : <TableRow>
-                     <TableCell colSpan="8" className="text-center">Ei luotuja tapahtumia.</TableCell>
-                  </TableRow>
                }
             </TableBody>
          </Table>

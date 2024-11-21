@@ -8,22 +8,26 @@ import { useToast } from '@/hooks/use-toast';
 import { createClient } from '@/lib/supabase/client';
 import CKeditor from '@/components/ck-editor';
 
-const SettingsOtherForm = ({ recordExists, user, sub_description }) => {
-	const [content, setContent] = useState(sub_description ? sub_description : "");
+const SettingsOtherForm = ({ recordExists, user, fi_sub_description, en_sub_description }) => {
+	const [fiContent, setFiContent] = useState(fi_sub_description ? fi_sub_description : "");
+	const [enContent, setEnContent] = useState(en_sub_description ? en_sub_description : "");
 	const { toast } = useToast();
 
 	const supabase = createClient();
-
-	const handleChange = (event, editor) => {
+	const handleEnContentChange = (event, editor) => {
 		const data = editor.getData();
-		setContent(data);
+		setEnContent(data);
+	}
+	const handleFiContentChange = (event, editor) => {
+		const data = editor.getData();
+		setFiContent(data);
 	};
 
 	const handleSave = async () => {
 		if (recordExists === false) {
 			const { error } = await supabase
 				.from("client_data")
-				.insert({ user_id: user.id, sub_description: content })
+				.insert({ user_id: user.id, fi_sub_description: fiContent, en_sub_description: enContent })
 
 			if (error) {
 				console.error(error);
@@ -42,7 +46,7 @@ const SettingsOtherForm = ({ recordExists, user, sub_description }) => {
 		} else {
 			const { error } = await supabase
 				.from("client_data")
-				.update({ sub_description: content })
+				.update({ fi_sub_description: fiContent, en_sub_description: enContent })
 				.eq("user_id", user.id)
 
 			if (error) {
@@ -69,7 +73,16 @@ const SettingsOtherForm = ({ recordExists, user, sub_description }) => {
 				<p className='text-zinc-600 leading-tight'>Lisätiedot näkyvät tapahtuman etusivulla, voit lisätä siihen jotain tilapäistä ohjeistusta tms. Osallistujille.</p>
 			</div>
 			<div className="w-full mt-5">
-				<CKeditor content={content} handleChange={handleChange} />
+				<div className='flex'>
+					<div className='max-w-[50%] flex-1 w-full mr-3'>
+						<h3 className='font-medium'>FI</h3>
+						<CKeditor content={fi_sub_description} handleChange={handleFiContentChange} />
+					</div>
+					<div className='max-w-[50%] flex-1 w-full ml-3'>
+						<h3 className='font-medium'>EN</h3>
+						<CKeditor content={en_sub_description} handleChange={handleEnContentChange} />
+					</div>
+				</div>
 				<Button
 					onClick={handleSave}
 					className="bg-orange-400 hover:bg-orange-500 mt-2"

@@ -70,12 +70,14 @@ const SettingsGoogleForm = ({ recordExists, user, google_link }) => {
             <p className='text-zinc-600 leading-tight'>Lisää tähän oma googlen arvostelulinkkisi, arvostelupainike näkyy palvelun etusivulla.</p>
          </div>
          <div className="w-full mt-5">
-            <Input
-               type="text"
-               value={inputValue}
-               onChange={(e) => setInputValue(e.target.value)}
-               className="bg-white"
-            />
+            <div className='w-full max-w-[50%]'>
+               <Input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  className="bg-white"
+               />
+            </div>
             <Button
                onClick={handleSubmit}
                className="bg-orange-400 hover:bg-orange-500 mt-2"

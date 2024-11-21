@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Button } from '../../ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { useToast } from "@/hooks/use-toast"
@@ -240,71 +240,75 @@ const SettingsPrivacyForm = ({ recordExists, user, privacy }) => {
          </div>
          <div className="w-full mt-5">
             <RadioGroup onValueChange={(value) => setSelectedOption(value)} defaultValue={selectedOption}>
-               <div className="flex items-center w-[40%] justify-between">
-                  <div className="flex items-center space-x-2 max-w-[30%] w-full">
-                     <RadioGroupItem value="link" id="link" />
+               <div className="flex items-center">
+                  <div className='mr-5'>
+                     <RadioGroupItem value="link" id="link" className="mr-2" />
                      <Label htmlFor="link" className="font-normal">Käytä linkkiä</Label>
                   </div>
-                  <div className='w-full ml-10'>
-                     <Input
-                        type="text"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        className="bg-white w-full mb-1"
-                     />
-                  </div>
-               </div>
-               <div className="flex items-center w-[40%] justify-between mt-3">
-                  <div className="flex items-center space-x-2 max-w-[30%] w-full">
-                     <RadioGroupItem value="pdf" id="pdf" />
+                  <div>
+                     <RadioGroupItem value="pdf" id="pdf" className="mr-2" />
                      <Label htmlFor="pdf" className="font-normal">Käytä pdf</Label>
                   </div>
-                  <div className='w-full ml-10'>
-                     <Button className="w-full mb-1">
-                        {rawSelectedFile
-                           ? <label
-                              htmlFor="pdf-upload"
-                              className="cursor-pointer w-full h-full italic"
-                           >
-                              {rawSelectedFile.name}
-                           </label>
-                           : <label
-                              htmlFor="pdf-upload"
-                              className="cursor-pointer w-full h-full"
-                           >
-                              Lisää tietosuojaseloste
-                           </label>
-                        }
-                        <input
-                           type="file"
-                           id="pdf-upload"
-                           accept='*'
-                           onChange={handleFileChanges}
-                           className="hidden"
+               </div>
+               <div className='max-w-[50%] w-full mt-1'>
+                  {selectedOption === "link" && (
+                     <div className='w-full'>
+                        <Input
+                           type="text"
+                           value={inputValue}
+                           onChange={(e) => setInputValue(e.target.value)}
+                           className="bg-white w-full mb-1"
                         />
-                     </Button>
-
-                     {pdfUrl && (
-                        <div className='w-full flex items-center justify-between'>
-                           <Button variant="link" type="button" asChild>
-                              <Link className='flex items-center !p-0 !h-7' target="_blank" rel="noopener noreferrer" href={pdfUrl}><Eye className="mr-1 w-5 h-5" /> Uusi ladattu tietosuojaseloste</Link>
-                           </Button>
-                           <span className="cursor-pointer" onClick={() => {
-                              setRawSelectedFile(null);
-                              setPdfUrl(null);
-                           }}>
-                              <X className="w-4 h-4" />
-                           </span>
-                        </div>
-
-                     )}
-                     {console.log(privacy)}
-                     {privacy !== null && !pdfUrl && (
-                        <Button variant="link" type="button" asChild>
-                           <Link className='flex items-center !p-0 !h-7' target="_blank" rel="noopener noreferrer" href={"https://supa.crossmedia.fi/storage/v1/object/public/" + privacy.pdf_privacy}><Eye className="mr-1 w-5 h-5" /> Näytä tietosuojaseloste</Link>
+                     </div>
+                  )}
+                  {selectedOption === "pdf" && (
+                     <Fragment>
+                        <Button className="mb-1 block">
+                           {rawSelectedFile
+                              ? <label
+                                 htmlFor="pdf-upload"
+                                 className="cursor-pointer w-full h-full italic"
+                              >
+                                 {rawSelectedFile.name}
+                              </label>
+                              : <label
+                                 htmlFor="pdf-upload"
+                                 className="cursor-pointer w-full h-full"
+                              >
+                                 Lisää tietosuojaseloste
+                              </label>
+                           }
+                           <input
+                              type="file"
+                              id="pdf-upload"
+                              accept='*'
+                              onChange={handleFileChanges}
+                              className="hidden"
+                           />
                         </Button>
-                     )}
-                  </div>
+
+                        {pdfUrl && (
+                           <div className='w-full flex items-center justify-between'>
+                              <Button variant="link" type="button" asChild>
+                                 <Link className='flex items-center !p-0 !h-7' target="_blank" rel="noopener noreferrer" href={pdfUrl}><Eye className="mr-1 w-5 h-5" /> Uusi ladattu tietosuojaseloste</Link>
+                              </Button>
+                              <span className="cursor-pointer" onClick={() => {
+                                 setRawSelectedFile(null);
+                                 setPdfUrl(null);
+                              }}>
+                                 <X className="w-4 h-4" />
+                              </span>
+                           </div>
+
+                        )}
+                        {console.log(privacy)}
+                        {privacy !== null && !pdfUrl && (
+                           <Button variant="link" type="button" asChild>
+                              <Link className='flex items-center !p-0 !h-7' target="_blank" rel="noopener noreferrer" href={"https://supa.crossmedia.fi/storage/v1/object/public/" + privacy.pdf_privacy}><Eye className="mr-1 w-5 h-5" /> Näytä tietosuojaseloste</Link>
+                           </Button>
+                        )}
+                     </Fragment>
+                  )}
                </div>
                <Button
                   onClick={selectedOption === "link" ? handleSubmitLink : handleSubmitPDF}

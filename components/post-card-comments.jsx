@@ -75,11 +75,11 @@ export default function PostCardComments({ event_post_id, user_id }) {
    }, [event_post_id, comments, supabase]);
 
    return (
-      <div className='text-black!'>
+      <div className='text-black'>
          <Drawer>
-            <DrawerTrigger className="bg-zinc-100 rounded-full flex items-center px-4 py-2 mr-3 max-sm:text-sm">
-               <MessageSquare className='max-sm:w-[22px] text-clientprimary' />
-               <span className="text-lg ml-2 font-semibold -mt-1 max-sm:text-base max-sm:ml-1 text-clientprimary">{comments && comments.length}</span>
+            <DrawerTrigger className="bg-clientprimary rounded-full flex items-center px-4 py-2 mr-3 max-sm:text-sm">
+               <MessageSquare className='max-sm:w-[22px] text-white' />
+               <span className="text-lg ml-2 font-semibold -mt-1 max-sm:text-base max-sm:ml-1 text-white">{comments && comments.length}</span>
             </DrawerTrigger>
             <DrawerContent>
                <DrawerHeader>
@@ -98,21 +98,20 @@ export default function PostCardComments({ event_post_id, user_id }) {
                               {comment.comment_text}
                            </p>
                         </div>)
-                     : "Ei ole komenteja..."
+                     : "Ei ole vielä kommenteja..."
                   }
 
                   {error && <p className="text-red-500 py-1">Virhe ladattaessa kommentteja</p>}
                </ScrollArea>
                <DrawerFooter>
                   <div className="flex items-center border border-zinc-200 w-full rounded-lg transition-all">
-                     <Input value={text} onChange={(e) => setText(e.target.value)} required className="w-full my-1 border-0 text-lg text-black" type="text" placeholder="Kirjoita komentti..." />
+                     <Input value={text} onChange={(e) => setText(e.target.value)} required className="w-full my-1 border-0 text-lg text-black" type="text" placeholder="Kirjoita kommentti..." />
                      {text && (
                         <Button variant="icon" className="p-0 px-2 border-0 border-zinc-200" onClick={() => sendComment()}>
                            <SendHorizonal className='text-black' />
                         </Button>
                      )}
                   </div>
-
                </DrawerFooter>
             </DrawerContent>
          </Drawer>
