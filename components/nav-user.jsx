@@ -56,7 +56,7 @@ export function NavUser({
           </Avatar> */}
           
           <div className="grid flex-1 leading-none">
-            <div className="font-medium">{user.first_name} {user.last_name}</div>
+            <div className="font-medium text-clientprimary">{user.first_name} {user.last_name}</div>
             <div className="text-sm text-zinc-500">{user.email}</div>
             {/* <div className="overflow-hidden text-xs text-muted-foreground">
               <div className="line-clamp-1">{user.email}</div>

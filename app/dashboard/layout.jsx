@@ -28,8 +28,8 @@ export default async function DashboardLayout({ children }) {
     <SidebarLayout defaultOpen={true}>
       <MainSidebar user={user} clientData={clientData.length !== 0 ? clientData[0] : null} />
       <main
-        className="flex flex-1 flex-col p-6 max-lg:p-2 transition-all duration-300 ease-in-out">
-        <div className="h-full">
+        className="flex flex-1 flex-col p-6 max-lg:p-2 transition-all duration-300 ease-in-out overflow-x-hidden">
+        <div className="h-full w-full">
           <SidebarTrigger />
           {children}
         </div>

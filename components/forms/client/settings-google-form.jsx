@@ -70,7 +70,7 @@ const SettingsGoogleForm = ({ recordExists, user, google_link }) => {
             <p className='text-zinc-600 leading-tight'>Lisää tähän oma googlen arvostelulinkkisi, arvostelupainike näkyy palvelun etusivulla.</p>
          </div>
          <div className="w-full mt-5">
-            <div className='w-full max-w-[50%]'>
+            <div className='w-full max-w-[50%] max-md:max-w-full'>
                <Input
                   type="text"
                   value={inputValue}

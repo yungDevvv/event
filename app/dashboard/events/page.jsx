@@ -26,14 +26,12 @@ export default async function Page() {
          .from('event_member')
          .select('*', { count: 'exact' })
          .eq('event_id', event.id);
-   
+
       return { ...event, memberCount: count || 0 };
    }));
 
    return (
-      <div>
-         <EventsTable data={eventsWithCounts} user={user} />
-      </div>
+      <EventsTable data={eventsWithCounts} user={user} />
    );
 }
 

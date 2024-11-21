@@ -24,7 +24,7 @@ export default async function Page() {
    
    return (
       <div>
-         <section className="mb-6">
+         <section className="mb-6 mt-2">
             <SettingsLogoForm
                user={user}
                recordExists={clientData.length !== 0}

@@ -73,12 +73,12 @@ const SettingsOtherForm = ({ recordExists, user, fi_sub_description, en_sub_desc
 				<p className='text-zinc-600 leading-tight'>Lisätiedot näkyvät tapahtuman etusivulla, voit lisätä siihen jotain tilapäistä ohjeistusta tms. Osallistujille.</p>
 			</div>
 			<div className="w-full mt-5">
-				<div className='flex'>
-					<div className='max-w-[50%] flex-1 w-full mr-3'>
+				<div className='flex max-lg:flex-wrap w-full'>
+					<div className='max-w-[50%] max-lg:max-w-full flex-1 w-full mr-3 max-lg:mb-2'>
 						<h3 className='font-medium'>FI</h3>
 						<CKeditor content={fi_sub_description} handleChange={handleFiContentChange} />
 					</div>
-					<div className='max-w-[50%] flex-1 w-full ml-3'>
+					<div className='max-w-[50%] max-lg:max-w-full max-lg:ml-0  flex-1 w-full ml-3'>
 						<h3 className='font-medium'>EN</h3>
 						<CKeditor content={en_sub_description} handleChange={handleEnContentChange} />
 					</div>

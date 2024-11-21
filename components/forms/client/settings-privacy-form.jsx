@@ -250,7 +250,7 @@ const SettingsPrivacyForm = ({ recordExists, user, privacy }) => {
                      <Label htmlFor="pdf" className="font-normal">Käytä pdf</Label>
                   </div>
                </div>
-               <div className='max-w-[50%] w-full mt-1'>
+               <div className='max-w-[50%] max-md:max-w-full w-full mt-1'>
                   {selectedOption === "link" && (
                      <div className='w-full'>
                         <Input
