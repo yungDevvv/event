@@ -8,6 +8,18 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import {
+   AlertDialog,
+   AlertDialogAction,
+   AlertDialogCancel,
+   AlertDialogContent,
+   AlertDialogDescription,
+   AlertDialogFooter,
+   AlertDialogHeader,
+   AlertDialogTitle,
+   AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+
+import {
    Delete,
    Download,
    EllipsisVertical,
@@ -26,14 +38,20 @@ import PostCardComments from "./post-card-comments"
 import { useEffect, useState } from "react"
 import { useOrigin } from "@/hooks/use-origin"
 import { useTranslations } from "next-intl"
+import { Input } from "./ui/input"
 
 
 export const PostList = ({ posts, favoritesList, user, isValidating, addToFavorites, mutate }) => {
    const { toast } = useToast();
+   const supabase = createClient();
+
+   const t = useTranslations();
 
    const deletePost = async (postID) => {
-      const supabase = createClient();
-      const { error } = await supabase.from('event_posts').delete().eq('id', postID);
+      const { error } = await supabase
+         .from('event_posts')
+         .delete()
+         .eq('id', postID);
 
       if (error) {
          console.error(error);
@@ -48,26 +66,31 @@ export const PostList = ({ posts, favoritesList, user, isValidating, addToFavori
 
       toast({
          variant: "success",
-         title: "Onnistui!",
-         description: "Kuva on poistettu onnistuneesti."
+         title: t("t3"),
+         description: t("t4")
       });
    }
 
    return (
-      <div className="text-black">
+      <div className="text-black mx-auto max-w-[500px]">
          {posts && posts.length !== 0
             ? posts.map(post => <PostCard toast={toast} deletePost={deletePost} key={post.id} addToFavorites={addToFavorites} isFavorite={favoritesList.includes(post.id)} post={post} user={user} />)
             : <span className="max-xs:ml-2 block text-white"> Ei ole kuvia, vielä</span>
          }
          {isValidating && <div className="w-full text-center"><Loader2 className="animate-spin mx-auto" /></div>}
+
       </div>
    )
 }
 
 function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite }) {
-   const [fullScreen, setToggleFullScreen] = useState(false);
    const [fileType, setFileType] = useState(null);
    const [shareText, setShareText] = useState("");
+   const [isFullScreen, setIsFullScreen] = useState(false);
+   const [reportModalPostId, setReportModalPostId] = useState(null);
+   const [openDropdownId, setOpenDropdownId] = useState(null);
+   const [reportReason, setReportedReason] = useState("");
+
    const ORIGIN = useOrigin();
    const t = useTranslations();
 
@@ -111,19 +134,48 @@ function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite })
       }
    };
 
-   const [isFullScreen, setIsFullScreen] = useState(false);
-
    const toggleFullScreen = () => {
       setIsFullScreen(!isFullScreen);
-    };
+   };
+
+   const reportPost = async (post) => {
+      const supabase = createClient();
+
+      const { error } = await supabase
+         .from("event_posts_reported")
+         .insert({
+            user_id: user.id,
+            event_id: post.event_id,
+            event_post_id: post.id,
+            report_reason: reportReason,
+         })
+
+         if(error) {
+            console.error(error);
+            toast({
+               variant: "supabaseError",
+               description: "Tuntematon virhe."
+            });
+            return;
+         }
+         
+         toast({
+            variant: "success",
+            title: t("t1"),
+            description: t("t2")
+         });
+
+         setOpenDropdownId(null);
+         setReportedReason("");
+   }
 
    useEffect(() => {
       getMimeTypeFromUrl("https://supa.crossmedia.fi/storage/v1/object/public/" + post.image_url)
    }, [post.image_url])
 
    return (
-      <div className=" bg-white p-4 mb-4 flex flex-col items-center rounded-md">
-            {isFullScreen && (
+      <div className=" bg-white p-4 max-xs:py-2 max-xs:px-3 mb-4 flex flex-col items-center rounded-md">
+         {isFullScreen && (
             <div
                className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center"
                onClick={toggleFullScreen}
@@ -137,17 +189,41 @@ function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite })
                <h3 className="font-semibold">{post.users.first_name} {post.users.last_name}</h3>
                <p>{format(new Date(post.created_at), 'HH:mm')}</p>
             </div>
-            <DropdownMenu>
+            <DropdownMenu modal={false} open={openDropdownId === post.id} onOpenChange={(isOpen) => setOpenDropdownId(isOpen ? post.id : null)}>
                <DropdownMenuTrigger className="hover:bg-zinc-200 rounded-md">
                   <EllipsisVertical />
                </DropdownMenuTrigger>
                <DropdownMenuContent side={"left"}>
                   {user.id === post.user_id
                      ? (
-                        <DropdownMenuItem className="flex items-center text-base" onClick={() => deletePost(post.id)}>
-                           <Delete size={20} className="mr-2" />
-                           <span>{t("r1")}</span>
-                        </DropdownMenuItem>
+                        <>
+                           <DropdownMenuItem className="flex items-center" onClick={() => deletePost(post.id)}>
+                              <Delete size={20} className="mr-2" />
+                              <span>{t("r1")}</span>
+                           </DropdownMenuItem>
+                           <AlertDialog open={reportModalPostId === post.id} onOpenChange={(isOpen) => setReportModalPostId(isOpen ? post.id : null)}>
+                              <AlertDialogTrigger className="relative hover:bg-zinc-100 cursor-default w-full select-none rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 flex items-center">
+                                 <ShieldAlert size={20} className="mr-2" />
+                                 <span>{t("r2")}</span>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                 <AlertDialogHeader className="space-y-0">
+                                    <AlertDialogTitle>{t("r5")}</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                       {t("r6")}
+                                    </AlertDialogDescription>
+                                    <div>
+                                       <Input placeholder="Esim. sopimaton kuva, luvaton käyttö…" className="block my-5" type="text" value={reportReason} onChange={(e) => setReportedReason(e.target.value)} />
+                                    </div>
+                                 </AlertDialogHeader>
+                                 <AlertDialogFooter>
+                                    <AlertDialogCancel>{t("r7")}</AlertDialogCancel>
+                                    <AlertDialogAction className="bg-clientprimary hover:bg-clientprimaryhover" onClick={() => reportPost(post)}>{t("m1")}</AlertDialogAction>
+                                 </AlertDialogFooter>
+                              </AlertDialogContent>
+                           </AlertDialog>
+                        </>
+
                      ) : (
                         <DropdownMenuItem className="flex items-center">
                            <ShieldAlert size={20} className="mr-2" />

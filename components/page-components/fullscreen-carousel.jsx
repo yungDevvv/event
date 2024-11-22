@@ -19,7 +19,7 @@ const fetcher = async (event_id) => {
       .from("event_posts")
       .select("*")
       .eq("event_id", event_id)
-      .eq("show", true);
+      .eq("show_in_slider", true);
 
    if (error) {
       throw error;

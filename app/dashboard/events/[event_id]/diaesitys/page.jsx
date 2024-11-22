@@ -24,7 +24,8 @@ export default function Page({ params, searchParams }) {
       const { data, error } = await supabase
          .from("event_posts")
          .select("*, events!event_id(event_name)")
-         .eq("event_id", event_id);
+         .eq("event_id", event_id)
+         .eq("accepted_image", true);
 
       if (error) {
          console.error(error);
@@ -49,7 +50,7 @@ export default function Page({ params, searchParams }) {
 
          const { error } = await supabase
             .from("event_posts")
-            .update({ show: !show })
+            .update({ show_in_slider: !show })
             .eq("id", postId);
 
          if (error) {
@@ -60,7 +61,10 @@ export default function Page({ params, searchParams }) {
 
       await Promise.all(updates);
 
-      const { error } = await supabase.from("events").update({ "diaesitys": true }).eq("id", event_id)
+      const { error } = await supabase
+         .from("events")
+         .update({ "diaesitys": true })
+         .eq("id", event_id)
 
       if (error) {
          console.error(error)
@@ -74,7 +78,7 @@ export default function Page({ params, searchParams }) {
    useEffect(() => {
       if (posts) {
          const canceledPosts = posts.reduce((acc, post) => {
-            if (post.show === false) {
+            if (post.show_in_slider === false) {
                acc[post.id] = true;
             }
             return acc;
@@ -113,7 +117,8 @@ export default function Page({ params, searchParams }) {
    }, [])
    return (
       <div className="w-full h-full min-h-screen">
-         <h1 className="font-semibold text-2xl mb-3">{posts && posts.length !== 0 && posts[0]?.events?.event_name}</h1>
+         <h1 className="font-semibold text-2xl">{posts && posts.length !== 0 && posts[0]?.events?.event_name}</h1>
+         <p className="text-base mt-1 mb-3 text-zinc-600">Jätä vain ne kuvat, jotka haluat näyttää diaesityksessa</p>
          {isLoading ? (
             <div className="w-full h-full flex items-center justify-center">
                <Loader2 size={46} className="text-zinc-700 animate-spin" />

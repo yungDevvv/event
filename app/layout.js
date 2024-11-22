@@ -14,8 +14,11 @@ const geistMono = localFont({
 });
 
 export const metadata = {
-  title: "Respa - App",
+  title: "Respa - Tapahtumat",
   description: "Respasolutions Oy",
+  icons: {
+    icon: "/site_logo.png",
+  },
 };
 
 function RootLayout({ children }) {

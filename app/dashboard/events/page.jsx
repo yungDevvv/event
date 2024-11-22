@@ -21,17 +21,36 @@ export default async function Page() {
       return <Error text="500 Internal Server Error" />
    }
 
-   const eventsWithCounts = await Promise.all(events.map(async (event) => {
-      const { count } = await supabase
+   const eventsWithCountsWithReports = await Promise.all(events.map(async (event) => {
+      const { count: membersCount } = await supabase
          .from('event_member')
          .select('*', { count: 'exact' })
          .eq('event_id', event.id);
 
-      return { ...event, memberCount: count || 0 };
+      const { data } = await supabase
+         .from('event_posts_reported')
+         .select('id, event_post_id')
+         .eq('event_id', event.id)
+         .eq('report_status', "waiting")
+  
+      const uniqueReports = Array.from(
+         data.reduce((map, item) => {
+           if (!map.has(item.event_post_id)) {
+             map.set(item.event_post_id, item);
+           }
+           return map;
+         }, new Map()).values()
+       );
+       
+      if (data.length !== 0) {
+         return { ...event, memberCount: membersCount || 0, reportsCount: uniqueReports.length || 0, reportedPosts: [...uniqueReports] };
+      }
+
+      return { ...event, memberCount: membersCount || 0 };
    }));
 
    return (
-      <EventsTable data={eventsWithCounts} user={user} />
+      <EventsTable data={eventsWithCountsWithReports} user={user} />
    );
 }
 

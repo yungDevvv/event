@@ -13,8 +13,15 @@
   "w3": "Omat",
   "w4": "Suosikit",
   "r1": "Poista",
-  "r2": "Raportoi",
+  "r2": "Raportoida",
   "r3": "Lataa",
   "r4": "Jakaa",
-  "m1": "Lähetä"
+  "r5": "Ilmoita ongelmasta",
+  "r6": "Anna syy, miksi haluat ilmoittaa tästä sisällöstä. Kerro mahdollisimman tarkasti, jotta voimme käsitellä ilmoituksesi tehokkaasti.",
+  "r7": "Peruutta",
+  "m1": "Lähetä",
+  "t1": "Raportti",
+  "t2": "Raportti on lähetetty onnistuneesti!",
+  "t3": "Kuva",
+  "t4": "Kuva on poistettu onnistuneesti!"
 }

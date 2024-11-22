@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/alert-dialog"
 
 import { format } from 'date-fns';
-import { Check, Copy, Delete, EllipsisVertical, Eye, ImageOff, ImagePlay, Images, Pencil, UserRound } from "lucide-react";
+import { Check, Copy, Delete, EllipsisVertical, Eye, ImageOff, ImagePlay, Images, Pencil, ShieldAlert, UserRound } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { forwardRef, useState, useEffect, Fragment } from "react";
 import { useToast } from "@/hooks/use-toast"
@@ -165,12 +165,16 @@ const EventsTable = ({ data, user }) => {
                            <TableCell className="whitespace-nowrap">{event.diaesitys ? <div className="w-[7px] h-[7px] bg-green-500 rounded-full animate-glow ml-6"></div> : <div className="w-[7px] h-[7px] bg-red-500 rounded-full ml-6"></div>}</TableCell>
                            <TableCell className="text-right whitespace-nowrap">
                               <DropdownMenu open={openDropdownId === event.id} onOpenChange={(isOpen) => setOpenDropdownId(isOpen ? event.id : null)}>
-                                 <DropdownMenuTrigger className="hover:bg-zinc-200 p-1 rounded-md" onClick={() => setTab(event.id)}>
+                                 <DropdownMenuTrigger className="hover:bg-zinc-200 p-1 rounded-md relative" onClick={() => setTab(event.id)}>
+                                    {event?.reportsCount && openDropdownId !== event.id && (
+                                       <div className="bg-red-500 text-white rounded-full absolute w-4 h-4 flex items-center justify-center -top-1 -right-1" title="Tarkistettavia kuvia">
+                                          {event?.reportsCount}
+                                       </div>
+                                    )}
                                     <EllipsisVertical />
                                  </DropdownMenuTrigger>
                                  <DropdownMenuContent side={"left"}>
                                     <DropdownMenuItem className="flex items-center" onClick={() => {
-                                       // onOpen("create-event", { edit: true, eventId: event.id })
                                        onOpen("create-event", { edit: true, event: event })
                                        setOpenDropdownId(null);
                                     }}>
@@ -205,6 +209,19 @@ const EventsTable = ({ data, user }) => {
                                        <UserRound size={18} className="mr-2" />
                                        <span>Osallistujat</span>
                                     </DropdownMenuItem>
+
+                                    {event.reportsCount && (
+                                       <DropdownMenuItem className="text-sm relative" asChild>
+                                          <Link className="flex" href={"/dashboard/events/" + event.id + "/reports"}>
+                                             <ShieldAlert size={18} className="mr-2" />
+                                             <span>Tarkistettavia kuvia</span>
+                                             <div className="bg-red-500 text-white rounded-full absolute w-4 h-4 flex items-center justify-center -top-1 -right-1" title="Tarkistettavia kuvia">
+                                                {event?.reportsCount}
+                                             </div>
+                                          </Link>
+                                       </DropdownMenuItem>
+                                    )}
+
                                     {event.diaesitys
                                        ? (
                                           <Fragment>

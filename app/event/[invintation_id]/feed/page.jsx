@@ -47,7 +47,6 @@ export default function Page() {
       }
    };
 
-
    useEffect(() => {
       const handleScroll = () => {
          if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 && !isReachingEnd && !isValidating) {
@@ -89,14 +88,7 @@ export default function Page() {
                      {t("w4")}
                   </Button>
                </div>
-
             </div>
-
-            {/* {hasNewPosts && (
-               <div className="w-full">
-                  <Button onClick={async () => await mutate()}>Uudet kuvat ovat tulleet, haluatko ladata?</Button>
-               </div>
-            )} */}
 
             {isLoading
                ? (
