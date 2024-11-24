@@ -11,6 +11,22 @@ import {
 } from "@/components/ui/table"
 
 import {
+   Menubar,
+   MenubarCheckboxItem,
+   MenubarContent,
+   MenubarItem,
+   MenubarMenu,
+   MenubarRadioGroup,
+   MenubarRadioItem,
+   MenubarSeparator,
+   MenubarShortcut,
+   MenubarSub,
+   MenubarSubContent,
+   MenubarSubTrigger,
+   MenubarTrigger,
+} from "@/components/ui/menubar"
+
+import {
    DropdownMenu,
    DropdownMenuContent,
    DropdownMenuItem,
@@ -32,7 +48,7 @@ import {
 } from "@/components/ui/alert-dialog"
 
 import { format } from 'date-fns';
-import { Check, Copy, Delete, EllipsisVertical, Eye, ImageOff, ImagePlay, Images, Pencil, ShieldAlert, UserRound } from "lucide-react";
+import { Check, Copy, Delete, EllipsisVertical, Eye, ImageOff, ImagePlay, Images, Pencil, PencilRuler, ShieldAlert, UserRound, Link as LucideLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { forwardRef, useState, useEffect, Fragment } from "react";
 import { useToast } from "@/hooks/use-toast"
@@ -164,7 +180,7 @@ const EventsTable = ({ data, user }) => {
                            <TableCell className="whitespace-nowrap">{event.group_size}</TableCell>
                            <TableCell className="whitespace-nowrap">{event.diaesitys ? <div className="w-[7px] h-[7px] bg-green-500 rounded-full animate-glow ml-6"></div> : <div className="w-[7px] h-[7px] bg-red-500 rounded-full ml-6"></div>}</TableCell>
                            <TableCell className="text-right whitespace-nowrap">
-                              <DropdownMenu open={openDropdownId === event.id} onOpenChange={(isOpen) => setOpenDropdownId(isOpen ? event.id : null)}>
+                              {/* <DropdownMenu open={openDropdownId === event.id} onOpenChange={(isOpen) => setOpenDropdownId(isOpen ? event.id : null)}>
                                  <DropdownMenuTrigger className="hover:bg-zinc-200 p-1 rounded-md relative" onClick={() => setTab(event.id)}>
                                     {event?.reportsCount && openDropdownId !== event.id && (
                                        <div className="bg-red-500 text-white rounded-full absolute w-4 h-4 flex items-center justify-center -top-1 -right-1" title="Tarkistettavia kuvia">
@@ -209,19 +225,17 @@ const EventsTable = ({ data, user }) => {
                                        <UserRound size={18} className="mr-2" />
                                        <span>Osallistujat</span>
                                     </DropdownMenuItem>
-
-                                    {event.reportsCount && (
-                                       <DropdownMenuItem className="text-sm relative" asChild>
-                                          <Link className="flex" href={"/dashboard/events/" + event.id + "/reports"}>
-                                             <ShieldAlert size={18} className="mr-2" />
-                                             <span>Tarkistettavia kuvia</span>
+                                    <DropdownMenuItem className="text-sm relative" asChild>
+                                       <Link className="flex" href={"/dashboard/events/" + event.id + "/reports"}>
+                                          <ShieldAlert size={18} className="mr-2" />
+                                          <span>Tarkistettavia kuvia</span>
+                                          {event.reportsCount && (
                                              <div className="bg-red-500 text-white rounded-full absolute w-4 h-4 flex items-center justify-center -top-1 -right-1" title="Tarkistettavia kuvia">
                                                 {event?.reportsCount}
                                              </div>
-                                          </Link>
-                                       </DropdownMenuItem>
-                                    )}
-
+                                          )}
+                                       </Link>
+                                    </DropdownMenuItem>
                                     {event.diaesitys
                                        ? (
                                           <Fragment>
@@ -254,14 +268,122 @@ const EventsTable = ({ data, user }) => {
                                        )
                                     }
                                  </DropdownMenuContent>
-                              </DropdownMenu>
+                              </DropdownMenu> */}
+                              <Menubar className="!bg-transparent border-0 h-fit w-fit shadow-none">
+                                 <MenubarMenu>
+                                    <MenubarTrigger onClick={() => setTab(event.id)} asChild>
+                                       <Button className="hover:bg-zinc-200 p-1 rounded-md relative cursor-pointer" variant="icon">
+                                          {event?.reportsCount && openDropdownId !== event.id && (
+                                             <div className="bg-red-500 text-white rounded-full absolute w-4 h-4 flex items-center justify-center -top-1 -right-1" title="Tarkistettavia kuvia">
+                                                {event?.reportsCount}
+                                             </div>
+                                          )}
+                                          <EllipsisVertical />
+                                       </Button>
+                                    </MenubarTrigger>
+                                    <MenubarContent side={"left"} aling={"start"} alignOffset={-70}>
+
+                                       <MenubarSub>
+                                          <MenubarSubTrigger>
+                                             <PencilRuler size={18} className="mr-2" />
+                                             <span>Toiminnot</span>
+                                          </MenubarSubTrigger>
+                                          <MenubarSubContent alignOffset={-5} sideOffset={5}>
+                                             <MenubarItem className="flex items-center" onClick={() => {
+                                                onOpen("create-event", { edit: true, event: event })
+                                                setOpenDropdownId(null);
+                                             }}>
+                                                <Pencil size={18} className="mr-2" />
+                                                <span>Muokkaa</span>
+                                             </MenubarItem>
+                                             <MenubarItem asChild>
+                                                <ConfirmDialog deleteEvent={deleteEvent} eventId={event.id} />
+                                             </MenubarItem>
+                                             <MenubarItem className="flex items-center" onClick={() => {
+                                                onOpen("create-event", { edit: false, duplicate: true, event: event })
+                                                setOpenDropdownId(null);
+                                             }}>
+                                                <Copy size={18} className="mr-2" />
+                                                <span>Duplicate</span>
+                                             </MenubarItem>
+                                          </MenubarSubContent>
+                                       </MenubarSub>
+                                       
+                                       <MenubarItem className="text-sm" asChild>
+                                          <Link className="flex" href={"/event/" + event.invintation_id}>
+                                             <Eye size={18} className="mr-2" />
+                                             <span>Näytä</span>
+                                          </Link>
+                                       </MenubarItem>
+
+                                       <MenubarItem className="text-sm" onClick={() => onCopy(event.invintation_id)}>
+                                          {copied ? <Check size={18} className="mr-2" /> : <LucideLink size={18} className="mr-2" />}
+                                          <span>Kopioi kutsulinkki</span>
+                                       </MenubarItem>
+
+                                       <MenubarItem className="text-sm" onClick={() => {
+                                          onOpen("event-members-list", { event_id: event.id, user_id: user.id })
+                                          setOpenDropdownId(null);
+                                       }}>
+                                          <UserRound size={18} className="mr-2" />
+                                          <span>Osallistujat</span>
+                                       </MenubarItem>
+
+                                       <MenubarItem className="text-sm relative" asChild>
+                                          <Link className="flex" href={"/dashboard/events/" + event.id + "/reports"}>
+                                             <ShieldAlert size={18} className="mr-2" />
+                                             <span>Tarkistettavia kuvia</span>
+                                             {event.reportsCount && (
+                                                <div className="bg-red-500 text-white rounded-full absolute w-4 h-4 flex items-center justify-center -top-1 -right-1" title="Tarkistettavia kuvia">
+                                                   {event?.reportsCount}
+                                                </div>
+                                             )}
+                                          </Link>
+                                       </MenubarItem>
+
+                                       {event.diaesitys
+                                          ? (
+                                             <Fragment>
+                                                <MenubarItem className="text-sm" onClick={() => {
+                                                   stopDiaesitys(event.id);
+                                                   setOpenDropdownId(null);
+                                                }}>
+                                                   <ImageOff size={18} className="mr-2" />
+                                                   <span>Pysähdy diaesitys</span>
+                                                </MenubarItem>
+                                                <MenubarItem className="text-sm" onClick={() => {
+                                                   router.push("/dashboard/events/" + event.id + "/diaesitys/slider")
+                                                   setOpenDropdownId(null);
+                                                }}>
+                                                   <ImagePlay size={18} className="mr-2" />
+                                                   <span>Diaesitys</span>
+                                                </MenubarItem>
+                                             </Fragment>
+
+                                          ) : (
+                                             <Link href={`/dashboard/events/${event.id}/diaesitys`}>
+                                                <MenubarItem className="text-sm" onClick={() => {
+                                                   // onOpen("event-members-list", { event_id: event.id, user_id: user.id })
+                                                   // setOpenDropdownId(null);
+                                                }}>
+                                                   <Images size={18} className="mr-2" />
+                                                   <span>Aloita diaesitys</span>
+                                                </MenubarItem>
+                                             </Link>
+                                          )
+                                       }
+
+
+                                    </MenubarContent>
+                                 </MenubarMenu>
+                              </Menubar>
                            </TableCell>
                         </TableRow>
                      ))
                   }
                </TableBody>
             </Table>
-         </div>
+         </div >
       </>
    )
 }

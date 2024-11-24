@@ -25,7 +25,7 @@ export default function Page({ params, searchParams }) {
          .from("event_posts")
          .select("*, events!event_id(event_name)")
          .eq("event_id", event_id)
-         .eq("accepted_image", true);
+         .eq("is_accepted", true);
 
       if (error) {
          console.error(error);
@@ -131,7 +131,7 @@ export default function Page({ params, searchParams }) {
                      : "Ei ole kuvia vielä."
                   }
                </div>
-               {posts && posts.length !== 0 && <Button className="mt-4 text-lg" onClick={() => handleSave()}>Talenna ja aloita diaesitys</Button>}
+               {posts && posts.length !== 0 && <Button className="mt-4 bg-clientprimary hover:bg-clientprimaryhover" onClick={() => handleSave()}>Talenna ja aloita diaesitys</Button>}
             </Fragment>
          )}
 

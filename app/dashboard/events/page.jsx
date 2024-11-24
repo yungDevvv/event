@@ -28,22 +28,14 @@ export default async function Page() {
          .eq('event_id', event.id);
 
       const { data } = await supabase
-         .from('event_posts_reported')
-         .select('id, event_post_id')
+         .from('event_posts')
+         .select('id')
          .eq('event_id', event.id)
          .eq('report_status', "waiting")
-  
-      const uniqueReports = Array.from(
-         data.reduce((map, item) => {
-           if (!map.has(item.event_post_id)) {
-             map.set(item.event_post_id, item);
-           }
-           return map;
-         }, new Map()).values()
-       );
+         .eq('is_reported', true)
        
       if (data.length !== 0) {
-         return { ...event, memberCount: membersCount || 0, reportsCount: uniqueReports.length || 0, reportedPosts: [...uniqueReports] };
+         return { ...event, memberCount: membersCount || 0, reportsCount: data.length || 0, reportedPosts: [...data] };
       }
 
       return { ...event, memberCount: membersCount || 0 };

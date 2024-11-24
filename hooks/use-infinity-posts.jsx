@@ -9,7 +9,7 @@ const fetchPosts = async (limit, offset, event_id) => {
       from('event_posts')
       .select('*, users!user_id(*)')
       .eq('event_id', event_id)
-      .eq("accepted_image", true)
+      .eq("is_accepted", true)
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 

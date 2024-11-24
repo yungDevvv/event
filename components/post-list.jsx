@@ -35,7 +35,7 @@ import { useToast } from "@/hooks/use-toast"
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
 import PostCardComments from "./post-card-comments"
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { useOrigin } from "@/hooks/use-origin"
 import { useTranslations } from "next-intl"
 import { Input } from "./ui/input"
@@ -141,32 +141,48 @@ function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite })
    const reportPost = async (post) => {
       const supabase = createClient();
 
-      const { error } = await supabase
-         .from("event_posts_reported")
+      const { error: eventPostReportError } = await supabase
+         .from("event_posts_reports")
          .insert({
             user_id: user.id,
-            event_id: post.event_id,
             event_post_id: post.id,
             report_reason: reportReason,
          })
 
-         if(error) {
-            console.error(error);
-            toast({
-               variant: "supabaseError",
-               description: "Tuntematon virhe."
-            });
-            return;
-         }
-         
+      if (eventPostReportError) {
+         console.error("eventPostReportError", eventPostReportError);
          toast({
-            variant: "success",
-            title: t("t1"),
-            description: t("t2")
+            variant: "supabaseError",
+            description: "Tuntematon virhe."
          });
+         return;
+      }
 
-         setOpenDropdownId(null);
-         setReportedReason("");
+      const { error: eventPostError } = await supabase
+         .from("event_posts")
+         .update({
+            is_reported: true,
+            report_status: "waiting"
+         })
+         .eq("id", post.id)
+
+      if (eventPostError) {
+         console.error("eventPostError", eventPostError);
+         toast({
+            variant: "supabaseError",
+            description: "Tuntematon virhe."
+         });
+         return;
+      }
+
+      toast({
+         variant: "success",
+         title: t("t1"),
+         description: t("t2")
+      });
+
+      setOpenDropdownId(null);
+      setReportedReason("");
    }
 
    useEffect(() => {
@@ -196,11 +212,12 @@ function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite })
                <DropdownMenuContent side={"left"}>
                   {user.id === post.user_id
                      ? (
-                        <>
-                           <DropdownMenuItem className="flex items-center" onClick={() => deletePost(post.id)}>
-                              <Delete size={20} className="mr-2" />
-                              <span>{t("r1")}</span>
-                           </DropdownMenuItem>
+                        <DropdownMenuItem className="flex items-center" onClick={() => deletePost(post.id)}>
+                           <Delete size={20} className="mr-2" />
+                           <span>{t("r1")}</span>
+                        </DropdownMenuItem>
+                     ) : (
+                        <Fragment>
                            <AlertDialog open={reportModalPostId === post.id} onOpenChange={(isOpen) => setReportModalPostId(isOpen ? post.id : null)}>
                               <AlertDialogTrigger className="relative hover:bg-zinc-100 cursor-default w-full select-none rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 flex items-center">
                                  <ShieldAlert size={20} className="mr-2" />
@@ -222,13 +239,7 @@ function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite })
                                  </AlertDialogFooter>
                               </AlertDialogContent>
                            </AlertDialog>
-                        </>
-
-                     ) : (
-                        <DropdownMenuItem className="flex items-center">
-                           <ShieldAlert size={20} className="mr-2" />
-                           <span>{t("r2")}</span>
-                        </DropdownMenuItem>
+                        </Fragment>
                      )
                   }
                </DropdownMenuContent>
