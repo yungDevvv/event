@@ -67,6 +67,11 @@ const SettingsPrivacyForm = ({ recordExists, user, privacy }) => {
          setRawSelectedFile(null);
          return;
       }
+      
+      if(!rawSelectedFile) {
+         alert("Tidosto puuttuu! Valitse tietosuojaseloste tiedosto.")
+         return;
+      }
 
       const fileName = `${user.id}/privacy/${generateId()}`;
 
@@ -302,7 +307,7 @@ const SettingsPrivacyForm = ({ recordExists, user, privacy }) => {
 
                         )}
                         {console.log(privacy)}
-                        {privacy !== null && !pdfUrl && (
+                        {privacy !== null && !pdfUrl && privacy?.pdf_privacy && (
                            <Button variant="link" type="button" asChild>
                               <Link className='flex items-center !p-0 !h-7' target="_blank" rel="noopener noreferrer" href={"https://supa.crossmedia.fi/storage/v1/object/public/" + privacy.pdf_privacy}><Eye className="mr-1 w-5 h-5" /> Näytä tietosuojaseloste</Link>
                            </Button>

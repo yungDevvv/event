@@ -15,7 +15,7 @@ export function MainSidebar({ user, clientData }) {
   return (
     <Sidebar className="bg-accent/60 ">
       <SidebarHeader className="justify-center">
-        {clientData !== null
+        {clientData !== null && clientData?.logo 
           ? <img className="max-h-[100px] h-full" src={"https://supa.crossmedia.fi/storage/v1/object/public/" + clientData.logo} />
           : <span className="text-lg text-orange-500 font-bold">Company Logo</span>
         }

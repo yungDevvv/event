@@ -96,8 +96,8 @@ export default function UploadImage({ user_id, event_id, mutate }) {
       <>
          <Button variant="outline" size={"icon"} className="cursor-pointer" asChild>
             <label htmlFor="dropzone-file" className="w-full h-auto border-none cursor-pointer flex justify-center items-center bg-transparent hover:bg-transparent">
-               <div className="border-4 border-black rounded-full p-4 bg-orange-100 bg-opacity-20 backdrop-blur-sm">
-                  <Camera size={48} className="text-black" />
+               <div className="border-4 border-clientprimary rounded-full p-4 bg-orange-100 bg-opacity-20 backdrop-blur-sm">
+                  <Camera size={48} className="text-clientprimary" />
                </div>
                <input id="dropzone-file" type="file" className="hidden" accept="image/*, video/*" onChange={handleImageChange} />
             </label>

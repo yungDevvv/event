@@ -281,14 +281,13 @@ const EventsTable = ({ data, user }) => {
                                           <EllipsisVertical />
                                        </Button>
                                     </MenubarTrigger>
-                                    <MenubarContent side={"left"} aling={"start"} alignOffset={-70}>
-
+                                    <MenubarContent side="left" aling={"start"} alignOffset={-70}>
                                        <MenubarSub>
                                           <MenubarSubTrigger>
                                              <PencilRuler size={18} className="mr-2" />
                                              <span>Toiminnot</span>
                                           </MenubarSubTrigger>
-                                          <MenubarSubContent alignOffset={-5} sideOffset={5}>
+                                          <MenubarSubContent alignOffset={-5} sideOffset={5} collisionPadding={20}>
                                              <MenubarItem className="flex items-center" onClick={() => {
                                                 onOpen("create-event", { edit: true, event: event })
                                                 setOpenDropdownId(null);

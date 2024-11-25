@@ -6,8 +6,8 @@
     "build": "next build",
     "start": "PORT=3030 next start",
     "lint": "next lint",
-    "kill": "lsof -i :3000 -t >/dev/null && lsof -i :3000 -t | xargs kill",
-    "dev": "next dev"
+    "kill": "lsof -i :3030 -t >/dev/null && lsof -i :3030 -t | xargs kill",
+    "dev": "PORT=3030 next dev"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-react": "^9.3.1",

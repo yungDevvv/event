@@ -44,7 +44,9 @@ export default function Page({ params }) {
 
    const logOut = async () => {
       const { error } = await supabase.auth.signOut()
+      router.refresh();
       router.push(origin + "/register-for-event/" + invintation_id + "/?login=true");
+      
    }
 
    useEffect(() => {
@@ -169,12 +171,26 @@ export default function Page({ params }) {
             </div>
          </section>
          <section className='container mx-auto py-3 px-3 max-w-[900px]'>
-            {event && event.event_description && (
-               <div
-                  className='text-white'
-                  dangerouslySetInnerHTML={{ __html: event.event_description }}
-               />
-            )}
+         {eventClientData &&
+               (
+                  eventClientData.fi_event_description && locale === "fi" && (
+                     <div
+                        className='text-white'
+                        dangerouslySetInnerHTML={{ __html: eventClientData.fi_event_description }}
+                     />
+                  )
+               )
+            }
+            {eventClientData &&
+               (
+                  eventClientData.en_event_description && locale === "en" && (
+                     <div
+                        className='text-white'
+                        dangerouslySetInnerHTML={{ __html: eventClientData.en_event_description }}
+                     />
+                  )
+               )
+            }
          </section>
 
          <section className='container mx-auto py-3 px-3 max-w-[900px]'>

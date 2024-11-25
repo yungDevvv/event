@@ -1,13 +1,10 @@
 "use client"
 
 import DiaImage from "@/components/diaesitys-image";
-import EventsTable from "@/components/page-components/events-table";
 import { Button } from "@/components/ui/button";
-import { Error } from "@/components/ui/error";
 import { useToast } from "@/hooks/use-toast";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, SquareX } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation"
 import { Fragment, useEffect, useState } from "react";
 import useSWR from "swr";
@@ -17,13 +14,15 @@ export default function Page({ params, searchParams }) {
    const supabase = createClient();
    const { event_id } = params;
 
+   const [eventName, setEventName] = useState("");
+
    const { toast } = useToast();
    const router = useRouter()
 
    const { data: posts, mutate, isLoading } = useSWR(event_id, async () => {
       const { data, error } = await supabase
          .from("event_posts")
-         .select("*, events!event_id(event_name)")
+         .select("*")
          .eq("event_id", event_id)
          .eq("is_accepted", true);
 
@@ -90,6 +89,27 @@ export default function Page({ params, searchParams }) {
    }, [posts])
 
    useEffect(() => {
+      (async () => {
+         const { data, error } = await supabase
+            .from("events")
+            .select("event_name")
+            .eq("id", event_id)
+
+         if(error) {
+            console.error(error);
+            setEventName("Virhe");
+            return;
+         }
+
+         if(data && data.length !== 0) {
+            setEventName(data[0].event_name)
+         } else {
+            setEventName("Tapahtuma ei löydy")
+         }
+      })()
+   }, [])
+
+   useEffect(() => {
       if (searchParams["offline"]) { //if redirected from /diaesitys/slider
          (async () => { // turn off slide show
             const { error } = await supabase
@@ -117,7 +137,7 @@ export default function Page({ params, searchParams }) {
    }, [])
    return (
       <div className="w-full h-full min-h-screen">
-         <h1 className="font-semibold text-2xl">{posts && posts.length !== 0 && posts[0]?.events?.event_name}</h1>
+         <h1 className="font-semibold text-2xl">{eventName && eventName}</h1>
          <p className="text-base mt-1 mb-3 text-zinc-600">Jätä vain ne kuvat, jotka haluat näyttää diaesityksessa</p>
          {isLoading ? (
             <div className="w-full h-full flex items-center justify-center">
