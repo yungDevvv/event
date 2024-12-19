@@ -25,7 +25,12 @@ import { createClient } from '@/lib/supabase/client';
 import { cn, generateId, generateInviteId } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import CKeditor from '../ck-editor';
+
+import dynamic from 'next/dynamic';
+const CKeditor = dynamic(() => import('@/components/ck-editor'), {
+   ssr: false,
+   loading: () => <div className='w-full min-h-[190px] flex justify-center items-center py-10'><Loader2 className='animate-spin text-clientprimary' /></div>
+});
 
 
 const eventTypes = [
@@ -189,7 +194,7 @@ const CreateEventModal = () => {
 
             toast({
                variant: "success",
-               title: "Onnistui!",
+               title: "Tapahtuma",
                description: "Tapahtuma on luotu onnistuneesti."
             });
 
@@ -283,7 +288,7 @@ const CreateEventModal = () => {
 
             toast({
                variant: "success",
-               title: "Onnistui!",
+               title: "Tapahtuma",
                description: "Tapahtuma on päivitetty onnistuneesti!"
             });
 
@@ -298,7 +303,7 @@ const CreateEventModal = () => {
          if (user) {
             const instructionsFileName = `${user.id}/instructions/${generateInviteId()}`; // eventID/userID.png
             const eventImageFileName = `${user.id}/event_image/${generateInviteId()}`;
-            
+
             let instructionUploadedFile;
             let eventImageUploadedFile;
 
@@ -381,7 +386,7 @@ const CreateEventModal = () => {
 
             toast({
                variant: "success",
-               title: "Onnistui!",
+               title: "Tapahtuma",
                description: "Tapahtuma on luotu onnistuneesti."
             });
 
@@ -660,13 +665,13 @@ const CreateEventModal = () => {
                   <div className='w-full'>
                      <FormLabel>Ohjelma - FI / EN</FormLabel>
                      <div className='flex'>
-                        <div className='max-w-[50%] w-full mr-1'>
+                        <div className='max-w-[50%] min-h-[190px] w-full mr-1'>
                            <CKeditor
                               content={eventDescriptionText}
                               handleChange={handleChangeFI} />
                         </div>
-                        <div className='max-w-[50%] w-full ml-1'>
-                           <div className='w-[300px] relative'>
+                        <div className='max-w-[50%] w-full min-h-[190px] ml-1'>
+                           <div className=' relative'>
                               <CKeditor
                                  content={enEventDescriptionText}
                                  handleChange={handleChangeEN} />
@@ -683,7 +688,7 @@ const CreateEventModal = () => {
                            <FormItem className="mr-1 max-sm:ml-0 w-full">
                               <FormLabel className="block mb-1" >Tapahtumaohjeistus</FormLabel>
                               <FormControl className="cursor-pointer">
-                                 <label className='w-full flex items-center justify-center cursor-pointer bg-clientprimary text-white h-9 px-3 py-1 rounded-md font-semibold'>
+                                 <label className={cn('w-full flex items-center justify-center cursor-pointer text-white h-9 px-3 py-1 rounded-md font-semibold inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2')}>
 
                                     {form.getValues("instructionsFile")
                                        ? <span className="text-sm italic">{form.getValues("instructionsFile")[0].name}</span>
@@ -725,7 +730,8 @@ const CreateEventModal = () => {
                            <FormItem className="ml-1 max-sm:ml-0 w-full">
                               <FormLabel className="block mb-1">Tapahtuman kuva</FormLabel>
                               <FormControl className="cursor-pointer">
-                                 <label className={cn('w-full flex items-center justify-center cursor-pointer bg-clientprimary text-white h-9 px-3 py-1 rounded-md font-semibold', eventImage && 'italic')}>
+                                 <label className={cn('w-full flex items-center justify-center cursor-pointer text-white h-9 px-3 py-1 rounded-md font-semibold inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2', eventImage && 'italic')}>
+
                                     {eventImage
                                        ? <span className="text-sm">{eventImage.name}</span>
                                        : <span className="text-sm">{data && data.event?.event_image ? "Vaihda kuva" : "Lataa kuva"}</span>
@@ -764,8 +770,8 @@ const CreateEventModal = () => {
                   </div>
 
                   <DialogFooter className="pb-3">
-                     {data?.duplicate && <Button type="submit" disabled={isLoading}>{isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Luo tapahtuma"}</Button>}
-                     {!data?.duplicate && <Button type="submit" disabled={isLoading}>{isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : data.edit ? "Muokkaa tapahtuma" : "Luo tapahtuma"}</Button>}
+                     {data?.duplicate && <Button className="bg-clientprimary hover:bg-clientprimaryhover" type="submit" disabled={isLoading}>{isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Tallenna"}</Button>}
+                     {!data?.duplicate && <Button className="bg-clientprimary hover:bg-clientprimaryhover" type="submit" disabled={isLoading}>{isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : data.edit ? "Tallenna" : "Tallenna"}</Button>}
                   </DialogFooter>
                </form>
             </Form>

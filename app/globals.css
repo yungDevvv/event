@@ -90,6 +90,10 @@ body {
   }
 }
 
+ul {
+  padding-left: 1.25rem !important;
+}
+
 .ck.ck-editor__editable_inline {
   @apply min-h-[150px];
   @apply max-h-[400px];

@@ -12,28 +12,14 @@ import {
 
 import {
    Menubar,
-   MenubarCheckboxItem,
    MenubarContent,
    MenubarItem,
    MenubarMenu,
-   MenubarRadioGroup,
-   MenubarRadioItem,
-   MenubarSeparator,
-   MenubarShortcut,
    MenubarSub,
    MenubarSubContent,
    MenubarSubTrigger,
    MenubarTrigger,
 } from "@/components/ui/menubar"
-
-import {
-   DropdownMenu,
-   DropdownMenuContent,
-   DropdownMenuItem,
-   DropdownMenuLabel,
-   DropdownMenuSeparator,
-   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 import {
    AlertDialog,
@@ -83,7 +69,7 @@ const EventsTable = ({ data, user }) => {
       router.refresh();
       toast({
          variant: "success",
-         title: "Onnistui!",
+         title: "Tapahtuma",
          description: "Tapahtuma on poistettu onnistuneesti."
       })
    }
@@ -119,7 +105,7 @@ const EventsTable = ({ data, user }) => {
 
       toast({
          variant: "success",
-         title: "Onnistui!",
+         title: "Diaesitys",
          description: "Diaesitys on nyt pysäytetty!"
       })
    }
@@ -180,101 +166,12 @@ const EventsTable = ({ data, user }) => {
                            <TableCell className="whitespace-nowrap">{event.group_size}</TableCell>
                            <TableCell className="whitespace-nowrap">{event.diaesitys ? <div className="w-[7px] h-[7px] bg-green-500 rounded-full animate-glow ml-6"></div> : <div className="w-[7px] h-[7px] bg-red-500 rounded-full ml-6"></div>}</TableCell>
                            <TableCell className="text-right whitespace-nowrap">
-                              {/* <DropdownMenu open={openDropdownId === event.id} onOpenChange={(isOpen) => setOpenDropdownId(isOpen ? event.id : null)}>
-                                 <DropdownMenuTrigger className="hover:bg-zinc-200 p-1 rounded-md relative" onClick={() => setTab(event.id)}>
-                                    {event?.reportsCount && openDropdownId !== event.id && (
-                                       <div className="bg-red-500 text-white rounded-full absolute w-4 h-4 flex items-center justify-center -top-1 -right-1" title="Tarkistettavia kuvia">
-                                          {event?.reportsCount}
-                                       </div>
-                                    )}
-                                    <EllipsisVertical />
-                                 </DropdownMenuTrigger>
-                                 <DropdownMenuContent side={"left"}>
-                                    <DropdownMenuItem className="flex items-center" onClick={() => {
-                                       onOpen("create-event", { edit: true, event: event })
-                                       setOpenDropdownId(null);
-                                    }}>
-                                       <Pencil size={18} className="mr-2" />
-                                       <span>Muokkaa</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem asChild>
-                                       <ConfirmDialog deleteEvent={deleteEvent} eventId={event.id} />
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="text-sm" asChild>
-                                       <Link className="flex" href={"/event/" + event.invintation_id}>
-                                          <Eye size={18} className="mr-2" />
-                                          <span>Näytä</span>
-                                       </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="flex items-center" onClick={() => {
-                                       // onOpen("create-event", { edit: false, duplicate: true, eventId: event.id })
-                                       onOpen("create-event", { edit: false, duplicate: true, event: event })
-                                       setOpenDropdownId(null);
-                                    }}>
-                                       <Pencil size={18} className="mr-2" />
-                                       <span>Duplicate</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="text-sm" onClick={() => onCopy(event.invintation_id)}>
-                                       {copied ? <Check size={18} className="mr-2" /> : <Copy size={18} className="mr-2" />}
-                                       <span>Kopioi kutsulinkki</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="text-sm" onClick={() => {
-                                       onOpen("event-members-list", { event_id: event.id, user_id: user.id })
-                                       setOpenDropdownId(null);
-                                    }}>
-                                       <UserRound size={18} className="mr-2" />
-                                       <span>Osallistujat</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="text-sm relative" asChild>
-                                       <Link className="flex" href={"/dashboard/events/" + event.id + "/reports"}>
-                                          <ShieldAlert size={18} className="mr-2" />
-                                          <span>Tarkistettavia kuvia</span>
-                                          {event.reportsCount && (
-                                             <div className="bg-red-500 text-white rounded-full absolute w-4 h-4 flex items-center justify-center -top-1 -right-1" title="Tarkistettavia kuvia">
-                                                {event?.reportsCount}
-                                             </div>
-                                          )}
-                                       </Link>
-                                    </DropdownMenuItem>
-                                    {event.diaesitys
-                                       ? (
-                                          <Fragment>
-                                             <DropdownMenuItem className="text-sm" onClick={() => {
-                                                stopDiaesitys(event.id);
-                                                setOpenDropdownId(null);
-                                             }}>
-                                                <ImageOff size={18} className="mr-2" />
-                                                <span>Pysähdy diaesitys</span>
-                                             </DropdownMenuItem>
-                                             <DropdownMenuItem className="text-sm" onClick={() => {
-                                                router.push("/dashboard/events/" + event.id + "/diaesitys/slider")
-                                                setOpenDropdownId(null);
-                                             }}>
-                                                <ImagePlay size={18} className="mr-2" />
-                                                <span>Diaesitys</span>
-                                             </DropdownMenuItem>
-                                          </Fragment>
-
-                                       ) : (
-                                          <Link href={`/dashboard/events/${event.id}/diaesitys`}>
-                                             <DropdownMenuItem className="text-sm" onClick={() => {
-                                                // onOpen("event-members-list", { event_id: event.id, user_id: user.id })
-                                                // setOpenDropdownId(null);
-                                             }}>
-                                                <Images size={18} className="mr-2" />
-                                                <span>Aloita diaesitys</span>
-                                             </DropdownMenuItem>
-                                          </Link>
-                                       )
-                                    }
-                                 </DropdownMenuContent>
-                              </DropdownMenu> */}
                               <Menubar className="!bg-transparent border-0 h-fit w-fit shadow-none">
                                  <MenubarMenu>
                                     <MenubarTrigger onClick={() => setTab(event.id)} asChild>
                                        <Button className="hover:bg-zinc-200 p-1 rounded-md relative cursor-pointer" variant="icon">
                                           {event?.reportsCount && openDropdownId !== event.id && (
-                                             <div className="bg-red-500 text-white rounded-full absolute w-4 h-4 flex items-center justify-center -top-1 -right-1" title="Tarkistettavia kuvia">
+                                             <div className="bg-red-500 text-white rounded-full absolute w-4 h-4 flex items-center justify-center -top-1 -right-1" title="Ilmiannetut julkaisut">
                                                 {event?.reportsCount}
                                              </div>
                                           )}
@@ -307,7 +204,7 @@ const EventsTable = ({ data, user }) => {
                                              </MenubarItem>
                                           </MenubarSubContent>
                                        </MenubarSub>
-                                       
+
                                        <MenubarItem className="text-sm" asChild>
                                           <Link className="flex" href={"/event/" + event.invintation_id}>
                                              <Eye size={18} className="mr-2" />
@@ -331,9 +228,9 @@ const EventsTable = ({ data, user }) => {
                                        <MenubarItem className="text-sm relative" asChild>
                                           <Link className="flex" href={"/dashboard/events/" + event.id + "/reports"}>
                                              <ShieldAlert size={18} className="mr-2" />
-                                             <span>Tarkistettavia kuvia</span>
+                                             <span>Ilmiannetut julkaisut</span>
                                              {event.reportsCount && (
-                                                <div className="bg-red-500 text-white rounded-full absolute w-4 h-4 flex items-center justify-center -top-1 -right-1" title="Tarkistettavia kuvia">
+                                                <div className="bg-red-500 text-white rounded-full absolute w-4 h-4 flex items-center justify-center -top-1 -right-1" title="Ilmiannetut julkaisut">
                                                    {event?.reportsCount}
                                                 </div>
                                              )}

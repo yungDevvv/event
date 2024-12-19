@@ -9,6 +9,7 @@ module.exports = {
 	theme: {
 		extend: {
 			screens: {
+				'mobile': '470px',
 				'xs': '430px',
 				'xxs': '385px'
 			},
@@ -64,13 +65,18 @@ module.exports = {
 			},
 			keyframes: {
 				glow: {
-				  '0%, 100%': { transform: 'scale(1)', opacity: '1' },
-				  '50%': { transform: 'scale(1.5)', opacity: '0.7' },
+					'0%, 100%': { transform: 'scale(1)', opacity: '1' },
+					'50%': { transform: 'scale(1.5)', opacity: '0.7' },
 				},
-			 },
-			 animation: {
+				spinOnce: {
+					'0%': { transform: 'rotate(0deg)' },
+					'100%': { transform: 'rotate(360deg)' },
+				},
+			},
+			animation: {
 				glow: 'glow 1.5s infinite ease-in-out',
-			 },
+				spinOnce: 'spinOnce 0.75s ease-in-out forwards',
+			},
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

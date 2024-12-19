@@ -44,7 +44,7 @@ export default function RegisterForEventForm({ logo, title, event_id, isLogin, i
             data: {
                first_name: formData.first_name,
                last_name: formData.last_name,
-               phone_number: formData.phone
+               // phone_number: formData.phone
             }
          }
       })
@@ -71,7 +71,7 @@ export default function RegisterForEventForm({ logo, title, event_id, isLogin, i
             return;
          }
 
-         setMessage("Kutsulinkki lähetettiin sähköpostiisi.");
+         setMessage("Kutsulinkki lähetettiin sähköpostiisi, katso myös roskapostikansio.");
       }
 
    }
@@ -166,7 +166,7 @@ export default function RegisterForEventForm({ logo, title, event_id, isLogin, i
                         />
                         {errors.last_name && <p className="text-red-500 text-sm -mt-1">{errors.last_name.message}</p>}
                      </div>
-                     <div className="grid gap-2">
+                     {/* <div className="grid gap-2">
                         <Label htmlFor="phone">Puhelin</Label>
                         <Input
                            id="phone"
@@ -174,7 +174,7 @@ export default function RegisterForEventForm({ logo, title, event_id, isLogin, i
                            {...register("phone", { required: "Puhelin on pakollinen" })}
                         />
                         {errors.phone && <p className="text-red-500 text-sm -mt-1">{errors.phone.message}</p>}
-                     </div>
+                     </div> */}
                   </Fragment>
                )}
                <div className="grid gap-2">

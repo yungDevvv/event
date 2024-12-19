@@ -39,9 +39,12 @@ import { Fragment, useEffect, useState } from "react"
 import { useOrigin } from "@/hooks/use-origin"
 import { useTranslations } from "next-intl"
 import { Input } from "./ui/input"
+import { Button } from "./ui/button"
 
 
 export const PostList = ({ posts, favoritesList, user, isValidating, addToFavorites, mutate }) => {
+   const [mutateLoading, setMutateLoading] = useState(false);
+
    const { toast } = useToast();
    const supabase = createClient();
 
@@ -72,7 +75,8 @@ export const PostList = ({ posts, favoritesList, user, isValidating, addToFavori
    }
 
    return (
-      <div className="text-black mx-auto max-w-[500px]">
+      <div className="text-black mx-auto max-w-[500px] pt-[100px] max-mobile:pt-[140px]">
+
          {posts && posts.length !== 0
             ? posts.map(post => <PostCard toast={toast} deletePost={deletePost} key={post.id} addToFavorites={addToFavorites} isFavorite={favoritesList.includes(post.id)} post={post} user={user} />)
             : <span className="max-xs:ml-2 block text-white"> Ei ole kuvia, vielä</span>
@@ -211,11 +215,34 @@ function PostCard({ toast, deletePost, user, post, addToFavorites, isFavorite })
                </DropdownMenuTrigger>
                <DropdownMenuContent side={"left"}>
                   {user.id === post.user_id
-                     ? (
+                     ? (<Fragment>
                         <DropdownMenuItem className="flex items-center" onClick={() => deletePost(post.id)}>
                            <Delete size={20} className="mr-2" />
                            <span>{t("r1")}</span>
                         </DropdownMenuItem>
+                        <AlertDialog open={reportModalPostId === post.id} onOpenChange={(isOpen) => setReportModalPostId(isOpen ? post.id : null)}>
+                           <AlertDialogTrigger className="relative hover:bg-zinc-100 cursor-default w-full select-none rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 flex items-center">
+                              <ShieldAlert size={20} className="mr-2" />
+                              <span>{t("r2")}</span>
+                           </AlertDialogTrigger>
+                           <AlertDialogContent>
+                              <AlertDialogHeader className="space-y-0">
+                                 <AlertDialogTitle>{t("r5")}</AlertDialogTitle>
+                                 <AlertDialogDescription>
+                                    {t("r6")}
+                                 </AlertDialogDescription>
+                                 <div>
+                                    <Input placeholder="Esim. sopimaton kuva, luvaton käyttö…" className="block my-5" type="text" value={reportReason} onChange={(e) => setReportedReason(e.target.value)} />
+                                 </div>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                 <AlertDialogCancel>{t("r7")}</AlertDialogCancel>
+                                 <AlertDialogAction className="bg-clientprimary hover:bg-clientprimaryhover" onClick={() => reportPost(post)}>{t("m1")}</AlertDialogAction>
+                              </AlertDialogFooter>
+                           </AlertDialogContent>
+                        </AlertDialog>
+                     </Fragment>
+
                      ) : (
                         <Fragment>
                            <AlertDialog open={reportModalPostId === post.id} onOpenChange={(isOpen) => setReportModalPostId(isOpen ? post.id : null)}>

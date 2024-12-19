@@ -70,7 +70,7 @@ export default function Page({ params }) {
       <div className="w-full h-full">
          <h1 className="font-semibold text-2xl">{reportedPosts && reportedPosts.length !== 0 && reportedPosts[0].events.event_name}</h1>
          <div className="space-x-4 mt-5">
-            <Button className={cn("bg-clientprimary hover:bg-clientprimaryhover opacity-90", filter === "waiting" && "bg-clientprimaryhover opacity-1")} onClick={() => setFilter("waiting")}>Odottaa hyväksyntä</Button>
+            <Button className={cn("bg-clientprimary hover:bg-clientprimaryhover opacity-90", filter === "waiting" && "bg-clientprimaryhover opacity-1")} onClick={() => setFilter("waiting")}>Odottaa tarkistusta</Button>
             <Button className={cn("bg-clientprimary hover:bg-clientprimaryhover opacity-90", filter === "deleted" && "bg-clientprimaryhover opacity-1")} onClick={() => setFilter("deleted")}>Poistetut</Button>
             <Button className={cn("bg-clientprimary hover:bg-clientprimaryhover opacity-90", filter === "approved" && "bg-clientprimaryhover opacity-1")} onClick={() => setFilter("approved")}>Hyväksytyt</Button>
             <Button className={cn("bg-clientprimary hover:bg-clientprimaryhover opacity-90", filter === "all" && "bg-clientprimaryhover opacity-1")} onClick={() => setFilter("all")}>Kaikki</Button>
@@ -222,8 +222,8 @@ const ReportedPost = ({ supabase, post, toggleFullScreen, router, toast, mutateP
 
             <div className="my-auto ml-10">
                <div className="mb-5">
-                  {post.report_status === "deleted" && <Badge variant="destructive">Poistettu</Badge>}
-                  {post.report_status === "waiting" && <Badge className="bg-blue-500 hover:bg-blue-500">Odottaa hyväksyntä</Badge>}
+                  {post.report_status === "deleted" && <Badge variant="destructive">Piilotettu</Badge>}
+                  {post.report_status === "waiting" && <Badge className="bg-blue-500 hover:bg-blue-500">Odottaa tarkistusta</Badge>}
                   {post.report_status === "approved" && <Badge className="bg-green-500 hover:bg-green-500">Hyväksytty</Badge>}
                </div>
                <p className="text-xs text-zinc-700">Kuvan omistaja</p>
@@ -257,15 +257,15 @@ const ReportedPost = ({ supabase, post, toggleFullScreen, router, toast, mutateP
             </div>
             <div className="my-auto ml-auto">
                {post.report_status === "deleted" && (
-                  <Button className="bg-clientprimary hover:bg-clientprimaryhover" onClick={() => approveImage()}>Hyväksy</Button>
+                  <Button className="bg-clientprimary hover:bg-clientprimaryhover" onClick={() => approveImage()}>Jatka julkaisua</Button>
                )}
                {post.report_status === "approved" && (
-                  <Button className="bg-red-600 hover:bg-red-700 block" onClick={() => deleteImageFromView()}>Poista näkyvistä</Button>
+                  <Button className="bg-red-600 hover:bg-red-700 block" onClick={() => deleteImageFromView()}>Piilota julkaisu</Button>
                )}
                {post.report_status === "waiting" && (
                   <Fragment>
-                     <Button className="bg-green-600 hover:bg-green-700 block mb-3" onClick={() => approveImage()}>Hyväksy</Button>
-                     <Button className="bg-red-600 hover:bg-red-700 block" onClick={() => deleteImageFromView()}>Poista näkyvistä</Button>
+                     <Button className="bg-green-600 hover:bg-green-700 block mb-3" onClick={() => approveImage()}>Jatka julkaisua</Button>
+                     <Button className="bg-red-600 hover:bg-red-700 block" onClick={() => deleteImageFromView()}>Piilota julkaisu</Button>
                   </Fragment>
                )}
             </div>

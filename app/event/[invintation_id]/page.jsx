@@ -1,5 +1,14 @@
 "use client"
 
+import {
+   Dialog,
+   DialogContent,
+   DialogDescription,
+   DialogHeader,
+   DialogTitle,
+   DialogTrigger,
+} from "@/components/ui/dialog"
+
 import '../../custom.css'
 import { useOrigin } from '@/hooks/use-origin';
 import { Button } from "@/components/ui/button";
@@ -13,9 +22,10 @@ import { useTranslations } from 'next-intl';
 import LanguageSwitcher from '@/components/language-switcher';
 import { useLocale } from "next-intl";
 import { useEventContext } from "@/context/EventContext";
-import { ArrowLeftFromLine } from 'lucide-react';
+import { ArrowLeftFromLine, Info } from 'lucide-react';
 
 export default function Page({ params }) {
+   const [infoModalOpen, setInfoModalOpen] = useState(false)
    const { invintation_id } = params;
    const t = useTranslations();
    const locale = useLocale();
@@ -46,7 +56,7 @@ export default function Page({ params }) {
       const { error } = await supabase.auth.signOut()
       router.refresh();
       router.push(origin + "/register-for-event/" + invintation_id + "/?login=true");
-      
+
    }
 
    useEffect(() => {
@@ -71,6 +81,9 @@ export default function Page({ params }) {
 
    }, [event])
 
+   useEffect(() => {
+      console.log(infoModalOpen)
+   }, [infoModalOpen])
    return (
       <div className='text-white  h-full'>
          <section className='relative h-[300px]'>
@@ -82,7 +95,11 @@ export default function Page({ params }) {
 
                </Button>
             )}
-            <LanguageSwitcher className={"absolute top-5 right-5 z-50"} />
+            <LanguageSwitcher className={"absolute top-5 right-5 z-10"} />
+            <Button variant="icon" className="cursor-pointer absolute top-[70px] right-5 z-20 border w-[82px] h-[42px] p-2 text-base" onClick={() => setInfoModalOpen(true)}>
+               <Info className='mr-2 w-5 h-5' />
+               <span>{t("f28")}</span>
+            </Button>
             <img
                src="https://crossmedia.fi/holvi/poistielta/img/banner-monkija.jpg"
                alt="Monkija Banner"
@@ -150,43 +167,45 @@ export default function Page({ params }) {
          </section>
          <section className="container mx-auto px-3 flex my-7 text-lg max-w-[900px]">
             <div>
-               <p>{t("v5")}</p>
-               <p>{t("v6")}</p>
-               <p>{t("v7")}</p>
-               <p>{t("v8")}</p>
+               {event?.event_time && <p>{t("v5")}</p>}
+               {event?.event_address && <p>{t("v6")}</p>}
+               {event?.instructions_file && <p>{t("v7")}</p>}
+               {event?.additional_services && event?.additional_services?.length !== 0 && (
+                  <p>{t("v8")}</p>
+               )}
             </div>
 
             <div className='ml-10'>
                {event?.event_time && <p>{format(new Date(event.event_date), 'dd.MM.yyyy')} {event.event_time.slice(0, 5)}</p>}
-               {event?.event_place && <span>{event?.event_address}, </span>}
+               {event?.event_address && <span>{event?.event_address}, </span>}
                {event?.event_place && <span className="capitalize">{event?.event_place}</span>}
                {event?.instructions_file && (
                   <p>
                      <Link target="_blank" rel="noopener noreferrer" className='text-white text-lg block underline' href={`https://supa.crossmedia.fi/storage/v1/object/public/${event?.instructions_file}`}>{t("v9")}</Link>
                   </p>
                )}
-               {event?.additional_services.length && (
+               {event?.additional_services.length !== 0 && (
                   event?.additional_services.join(", ")
                )}
             </div>
          </section>
          <section className='container mx-auto py-3 px-3 max-w-[900px]'>
-         {eventClientData &&
+            {event &&
                (
-                  eventClientData.fi_event_description && locale === "fi" && (
+                  event.fi_event_description && locale === "fi" && (
                      <div
                         className='text-white'
-                        dangerouslySetInnerHTML={{ __html: eventClientData.fi_event_description }}
+                        dangerouslySetInnerHTML={{ __html: event.fi_event_description }}
                      />
                   )
                )
             }
-            {eventClientData &&
+            {event &&
                (
-                  eventClientData.en_event_description && locale === "en" && (
+                  event.en_event_description && locale === "en" && (
                      <div
                         className='text-white'
-                        dangerouslySetInnerHTML={{ __html: eventClientData.en_event_description }}
+                        dangerouslySetInnerHTML={{ __html: event.en_event_description }}
                      />
                   )
                )
@@ -215,6 +234,66 @@ export default function Page({ params }) {
                )
             }
          </section>
+
+         <Dialog onOpenChange={setInfoModalOpen} open={infoModalOpen} className="">
+            <div className="rounded-md overflow-hidden">
+               <DialogContent className="max-h-[90vh] overflow-y-auto">
+                  <DialogHeader className="!text-left">
+                     <DialogTitle>{t("f2")}</DialogTitle>
+                     <DialogDescription>
+                     </DialogDescription>
+                     <div className="mt-2">
+                        <h3 className="font-bold underline mb-2">{t("f3")}</h3>
+                        <div className="ml-10">
+                           <span className="leading-tight block mb-3">{t("f4")}</span>
+                           <p className="leading-tight mb-2">{t("f5")}</p>
+                           <p className="leading-tight mb-2">{t("f6")}</p>
+                           <p className="leading-tight">{t("f7")}</p>
+                        </div>
+                     </div>
+                     <div className="mt-2">
+                        <h3 className="font-bold underline mb-2">{t("f8")}</h3>
+                        <div className="ml-10">
+                           <p className="font-medium mb-1">{t("f9")}</p>
+                           <ul className="list-disc list-inside marker:text-black ml-5 mb-2">
+                              <li className="leading-tight">{t("f10")}</li>
+                           </ul>
+                           <p className="font-medium mb-1">{t("f11")}</p>
+                           <ul className="list-disc list-inside marker:text-black mb-2">
+                              <li className="leading-tight mb-1">{t("f12")}</li>
+                              <li className="leading-tight">{t("f13")}</li>
+                           </ul>
+                           <p className="font-medium mb-1">{t("f14")}</p>
+                           <ul className="list-disc list-inside marker:text-black mb-2">
+                              <li className="leading-tight mb-1">{t("f15")} <img src="/comment.png" className="w-10 h-8 inline" /></li>
+                              <li className="leading-tight mb-1">{t("f16")}</li>
+                              <li className="leading-tight">{t("f17")}</li>
+                           </ul>
+                           <p className="font-medium mb-1">{t("f18")}</p>
+                           <ul className="list-disc list-inside marker:text-black mb-2">
+                              <li className="leading-tight mb-1">{t("f19")} <img src="/favorites.png" className="w-10 h-8 inline" /></li>
+                              <li className="leading-tight mb-1">{t("f20")}</li>
+                           </ul>
+                           <p className="font-medium mb-1">{t("f21")}</p>
+                           <ul className="list-disc list-inside marker:text-black mb-2">
+                              <li className="leading-tight">{t("f22")} <img src="/share.png" className="w-10 h-8 inline" /> {t("f23")}</li>
+                           </ul>
+                           <p className="font-medium mb-1">{t("f24")}</p>
+                           <ul className="list-disc list-inside marker:text-black mb-2">
+                              <li className="leading-tight">{t("f25")}</li>
+                           </ul>
+                           <p className="font-medium mb-1">{t("f26")}</p>
+                           <ul className="list-disc list-inside marker:text-black mb-2">
+                              <li className="leading-tight">{t("f27")}</li>
+                           </ul>
+                        </div>
+                     </div>
+                  </DialogHeader>
+               </DialogContent>
+            </div>
+
+         </Dialog>
+
       </div>
    );
 }

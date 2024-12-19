@@ -65,7 +65,7 @@ const SettingsLogoForm = ({ recordExists, user, logo }) => {
 
          toast({
             variant: "success",
-            title: "Onnistui!",
+            title: "Logo",
             description: "Logo on tallennettu onnistuneesti."
          });
       } else { // record exists
@@ -87,7 +87,7 @@ const SettingsLogoForm = ({ recordExists, user, logo }) => {
 
          toast({
             variant: "success",
-            title: "Onnistui!",
+            title: "Logo",
             description: "Logo on päivitetty onnistuneesti."
          });
       }

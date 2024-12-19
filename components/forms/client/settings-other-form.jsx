@@ -6,7 +6,13 @@ import { useEffect, useState } from 'react';
 import { Button } from '../../ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { createClient } from '@/lib/supabase/client';
-import CKeditor from '@/components/ck-editor';
+import dynamic from 'next/dynamic';
+import { Loader2 } from 'lucide-react';
+
+const CKeditor = dynamic(() => import('@/components/ck-editor'), {
+	ssr: false,
+	loading: () => <div className='w-full min-h-[190px] flex justify-center items-center py-10'><Loader2 className='animate-spin text-clientprimary' /></div>
+});
 
 const SettingsOtherForm = ({ recordExists, user, fi_sub_description, en_sub_description }) => {
 	const [fiContent, setFiContent] = useState(fi_sub_description ? fi_sub_description : "");
@@ -40,7 +46,7 @@ const SettingsOtherForm = ({ recordExists, user, fi_sub_description, en_sub_desc
 
 			toast({
 				variant: "success",
-				title: "Onnistui!",
+				title: "Tieto",
 				description: "Tiedon tallentaminen onnistui."
 			})
 		} else {
@@ -60,7 +66,7 @@ const SettingsOtherForm = ({ recordExists, user, fi_sub_description, en_sub_desc
 
 			toast({
 				variant: "success",
-				title: "Onnistui!",
+				title: "Tieto",
 				description: "Tiedon päivittäminen onnistui."
 			})
 		}
@@ -74,11 +80,11 @@ const SettingsOtherForm = ({ recordExists, user, fi_sub_description, en_sub_desc
 			</div>
 			<div className="w-full mt-5">
 				<div className='flex max-lg:flex-wrap w-full'>
-					<div className='max-w-[50%] max-lg:max-w-full flex-1 w-full mr-3 max-lg:mb-2'>
+					<div className='max-w-[50%] max-lg:max-w-full flex-1 w-full mr-3 max-lg:mb-2 min-h-[190px]'>
 						<h3 className='font-medium'>FI</h3>
 						<CKeditor content={fi_sub_description} handleChange={handleFiContentChange} />
 					</div>
-					<div className='max-w-[50%] max-lg:max-w-full max-lg:ml-0  flex-1 w-full ml-3'>
+					<div className='max-w-[50%] max-lg:max-w-full max-lg:ml-0  flex-1 w-full ml-3 min-h-[190px]'>
 						<h3 className='font-medium'>EN</h3>
 						<CKeditor content={en_sub_description} handleChange={handleEnContentChange} />
 					</div>

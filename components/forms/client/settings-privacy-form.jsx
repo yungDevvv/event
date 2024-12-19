@@ -111,7 +111,7 @@ const SettingsPrivacyForm = ({ recordExists, user, privacy }) => {
 
          toast({
             variant: "success",
-            title: "Onnistui!",
+            title: "Tietosuojaseloste",
             description: "Tietosuojaseloste on päivitetty onnistuneesti."
          });
       } else { // record exists
@@ -137,7 +137,7 @@ const SettingsPrivacyForm = ({ recordExists, user, privacy }) => {
 
          toast({
             variant: "success",
-            title: "Onnistui!",
+            title: "Tietosuojaseloste",
             description: "Tietosuojaseloste on päivitetty onnistuneesti."
          });
       }
@@ -204,7 +204,7 @@ const SettingsPrivacyForm = ({ recordExists, user, privacy }) => {
 
          toast({
             variant: "success",
-            title: "Onnistui!",
+            title: "Tietosuojaseloste",
             description: "Tietosuojaselosten tallentaminen onnistui."
          })
       } else {
@@ -230,7 +230,7 @@ const SettingsPrivacyForm = ({ recordExists, user, privacy }) => {
 
          toast({
             variant: "success",
-            title: "Onnistui!",
+            title: "Tietosuojaseloste",
             description: "Tietosuojaselosten päivittäminen onnistui."
          })
       }

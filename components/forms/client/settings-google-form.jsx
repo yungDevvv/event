@@ -37,7 +37,7 @@ const SettingsGoogleForm = ({ recordExists, user, google_link }) => {
 
          toast({
             variant: "success",
-            title: "Onnistui!",
+            title: "Tieto",
             description: "Tiedon tallentaminen onnistui."
          })
       } else {
@@ -57,7 +57,7 @@ const SettingsGoogleForm = ({ recordExists, user, google_link }) => {
 
          toast({
             variant: "success",
-            title: "Onnistui!",
+            title: "Tieto",
             description: "Tiedon päivittäminen onnistui."
          })
       }

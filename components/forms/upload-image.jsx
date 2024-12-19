@@ -74,7 +74,7 @@ export default function UploadImage({ user_id, event_id, mutate }) {
 
          toast({
             variant: "success",
-            title: "Onnistui!",
+            title: "Kuva",
             description: "Kuva on lähetetty onnistuneesti!"
          });
       

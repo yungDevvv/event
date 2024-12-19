@@ -49,7 +49,7 @@ const MembersListModal = () => {
 
       toast({
          variant: "success",
-         title: "Onnistui!",
+         title: "Osallistuja",
          description: "Osallistuja poistettu onnistuneesti!"
       })
 
